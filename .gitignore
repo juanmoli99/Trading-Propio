@@ -41,3 +41,7 @@ temp/
 # Environment templates are safe to commit
 !.env.example
 !.env.*.example
+
+# Database backups
+backups/
+backend/backups/

@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import alpacaLiveConfig from './alpaca-live.config';
 import alpacaPaperConfig from './alpaca-paper.config';
 import appConfig from './app.config';
+import databaseConfig from './database.config';
 import { validateEnvironment } from './env.validation';
 import operationalConfig from './operational.config';
 

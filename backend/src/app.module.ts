@@ -7,6 +7,7 @@ import { SanitizedLogger } from './common/logging/sanitized-logger.service';
 import { OperationalStateModule } from './common/operational-state/operational-state.module';
 import { StartupModule } from './common/startup/startup.module';
 import { AppConfigModule } from './config/app-config.module';
+import { PrismaModule } from './database/prisma.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { HealthModule } from './health/health.module';
     AppConfigModule,
     OperationalStateModule,
     StartupModule,
+    PrismaModule,
     HealthModule,
   ],
   controllers: [AppController],

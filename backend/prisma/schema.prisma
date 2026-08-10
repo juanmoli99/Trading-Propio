@@ -1,0 +1,59 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+model SystemMetadata {
+  id        String                   @id @default(cuid())
+  key       String                   @unique
+  value     String
+  status    RecordStatus             @default(ACTIVE)
+  version   Int                      @default(0)
+  createdAt DateTime                 @default(now())
+  updatedAt DateTime                 @updatedAt
+  revisions SystemMetadataRevision[]
+}
+
+model SystemMetadataRevision {
+  id               String   @id @default(cuid())
+  systemMetadataId String
+  value            String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  systemMetadata SystemMetadata @relation(fields: [systemMetadataId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([systemMetadataId, createdAt])
+  @@index([systemMetadataId])
+  @@index([createdAt])
+}
+
+model FinancialConstraintProbe {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(20, 8)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PersistentLock {
+  id         String   @id
+  key        String   @unique
+  ownerId    String
+  acquiredAt DateTime @default(now())
+  expiresAt  DateTime
+  updatedAt  DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([ownerId])
+}

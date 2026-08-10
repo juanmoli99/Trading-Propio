@@ -38,6 +38,9 @@ const environmentSchema = z
     APP_TIMEZONE: timeZoneSchema.default('UTC'),
     BASE_CURRENCY: z.enum(baseCurrencies).default('USD'),
 
+    DATABASE_URL: z.url(),
+    DIRECT_URL: z.url(),
+
     DEFAULT_HTTP_TIMEOUT_MS: z.coerce
       .number()
       .int()
