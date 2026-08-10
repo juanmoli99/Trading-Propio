@@ -37,3 +37,7 @@ frontend/.vite/
 tmp/
 temp/
 *.tmp
+
+# Environment templates are safe to commit
+!.env.example
+!.env.*.example
