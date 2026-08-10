@@ -1,0 +1,39 @@
+﻿# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma / local databases
+*.db
+*.db-journal
+
+# Vite
+frontend/.vite/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
