@@ -64,6 +64,20 @@ const environmentSchema = z
       .max(120000)
       .default(10000),
 
+    ALPACA_CIRCUIT_BREAKER_FAILURE_THRESHOLD: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(50)
+      .default(5),
+
+    ALPACA_CIRCUIT_BREAKER_OPEN_MS: z.coerce
+      .number()
+      .int()
+      .min(1000)
+      .max(300000)
+      .default(30000),
+
     ALPACA_PAPER_API_KEY: z.string().min(1).optional(),
     ALPACA_PAPER_API_SECRET: z.string().min(1).optional(),
     ALPACA_PAPER_BASE_URL: z.url().default('https://paper-api.alpaca.markets'),

@@ -1,4 +1,5 @@
 ﻿import { HttpException, HttpStatus } from '@nestjs/common';
+import { AlpacaNetworkError } from '../../alpaca/alpaca-network.error';
 import type {
   ClassifiedError,
   ErrorCategory,
@@ -34,6 +35,13 @@ function classifyHttpStatus(statusCode: number): ClassifiedError {
 }
 
 export function classifyError(exception: unknown): ClassifiedError {
+  if (exception instanceof AlpacaNetworkError) {
+    return {
+      category: 'NETWORK',
+      severity: 'HIGH',
+    };
+  }
+
   if (exception instanceof HttpException) {
     return classifyHttpStatus(exception.getStatus());
   }

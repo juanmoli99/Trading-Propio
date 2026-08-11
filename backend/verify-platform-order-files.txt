@@ -1,3 +1,7 @@
+﻿===== .\scripts\verify-alpaca-submit-order.ts =====
+[ARCHIVO NO EXISTE]
+
+===== .\prisma\schema.prisma =====
 generator client {
   provider     = "prisma-client"
   output       = "../src/generated/prisma"
@@ -129,3 +133,5 @@ model PlatformAlpacaOrder {
   @@index([symbol])
   @@index([createdAt])
 }
+
+

@@ -14,4 +14,5 @@ export type * from './models/PersistentLock.js';
 export type * from './models/SingleOperator.js';
 export type * from './models/AuthSession.js';
 export type * from './models/AuditEvent.js';
+export type * from './models/PlatformAlpacaOrder.js';
 export type * from './commonInputTypes.js';

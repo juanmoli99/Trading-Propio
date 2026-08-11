@@ -434,6 +434,7 @@ export const ModelName = {
   SingleOperator: 'SingleOperator',
   AuthSession: 'AuthSession',
   AuditEvent: 'AuditEvent',
+  PlatformAlpacaOrder: 'PlatformAlpacaOrder',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -462,7 +463,8 @@ export type TypeMap<
       | 'persistentLock'
       | 'singleOperator'
       | 'authSession'
-      | 'auditEvent';
+      | 'auditEvent'
+      | 'platformAlpacaOrder';
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -998,6 +1000,82 @@ export type TypeMap<
         };
       };
     };
+    PlatformAlpacaOrder: {
+      payload: Prisma.$PlatformAlpacaOrderPayload<ExtArgs>;
+      fields: Prisma.PlatformAlpacaOrderFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.PlatformAlpacaOrderFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.PlatformAlpacaOrderFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>;
+        };
+        findFirst: {
+          args: Prisma.PlatformAlpacaOrderFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.PlatformAlpacaOrderFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>;
+        };
+        findMany: {
+          args: Prisma.PlatformAlpacaOrderFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>[];
+        };
+        create: {
+          args: Prisma.PlatformAlpacaOrderCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>;
+        };
+        createMany: {
+          args: Prisma.PlatformAlpacaOrderCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.PlatformAlpacaOrderCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>[];
+        };
+        delete: {
+          args: Prisma.PlatformAlpacaOrderDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>;
+        };
+        update: {
+          args: Prisma.PlatformAlpacaOrderUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>;
+        };
+        deleteMany: {
+          args: Prisma.PlatformAlpacaOrderDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.PlatformAlpacaOrderUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.PlatformAlpacaOrderUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>[];
+        };
+        upsert: {
+          args: Prisma.PlatformAlpacaOrderUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlatformAlpacaOrderPayload>;
+        };
+        aggregate: {
+          args: Prisma.PlatformAlpacaOrderAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlatformAlpacaOrder>;
+        };
+        groupBy: {
+          args: Prisma.PlatformAlpacaOrderGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.PlatformAlpacaOrderGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.PlatformAlpacaOrderCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.PlatformAlpacaOrderCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -1126,6 +1204,18 @@ export const AuditEventScalarFieldEnum = {
 
 export type AuditEventScalarFieldEnum =
   (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum];
+
+export const PlatformAlpacaOrderScalarFieldEnum = {
+  id: 'id',
+  alpacaOrderId: 'alpacaOrderId',
+  clientOrderId: 'clientOrderId',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PlatformAlpacaOrderScalarFieldEnum =
+  (typeof PlatformAlpacaOrderScalarFieldEnum)[keyof typeof PlatformAlpacaOrderScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',
@@ -1485,6 +1575,7 @@ export type GlobalOmitConfig = {
   singleOperator?: Prisma.SingleOperatorOmit;
   authSession?: Prisma.AuthSessionOmit;
   auditEvent?: Prisma.AuditEventOmit;
+  platformAlpacaOrder?: Prisma.PlatformAlpacaOrderOmit;
 };
 
 /* Types for Logging */

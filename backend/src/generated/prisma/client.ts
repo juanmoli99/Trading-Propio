@@ -79,3 +79,8 @@ export type AuthSession = Prisma.AuthSessionModel;
  *
  */
 export type AuditEvent = Prisma.AuditEventModel;
+/**
+ * Model PlatformAlpacaOrder
+ *
+ */
+export type PlatformAlpacaOrder = Prisma.PlatformAlpacaOrderModel;

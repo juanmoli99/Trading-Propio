@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AlpacaModule } from './alpaca/alpaca.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -24,6 +25,7 @@ import { HealthModule } from './health/health.module';
 @Module({
   imports: [
     AppConfigModule,
+    AlpacaModule,
     CorrelationModule,
     AuditModule,
     HardCapsModule,

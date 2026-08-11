@@ -5,6 +5,8 @@ export interface OperationalConfiguration {
   maxRetries: number;
   retryBaseDelayMs: number;
   gracefulShutdownTimeoutMs: number;
+  alpacaCircuitBreakerFailureThreshold: number;
+  alpacaCircuitBreakerOpenMs: number;
 }
 
 export default registerAs('operational', (): OperationalConfiguration => ({
@@ -13,5 +15,11 @@ export default registerAs('operational', (): OperationalConfiguration => ({
   retryBaseDelayMs: Number(process.env.RETRY_BASE_DELAY_MS ?? 500),
   gracefulShutdownTimeoutMs: Number(
     process.env.GRACEFUL_SHUTDOWN_TIMEOUT_MS ?? 10000,
+  ),
+  alpacaCircuitBreakerFailureThreshold: Number(
+    process.env.ALPACA_CIRCUIT_BREAKER_FAILURE_THRESHOLD ?? 5,
+  ),
+  alpacaCircuitBreakerOpenMs: Number(
+    process.env.ALPACA_CIRCUIT_BREAKER_OPEN_MS ?? 30000,
   ),
 }));

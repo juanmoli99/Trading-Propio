@@ -61,6 +61,7 @@ export const ModelName = {
   SingleOperator: 'SingleOperator',
   AuthSession: 'AuthSession',
   AuditEvent: 'AuditEvent',
+  PlatformAlpacaOrder: 'PlatformAlpacaOrder',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -168,6 +169,18 @@ export const AuditEventScalarFieldEnum = {
 
 export type AuditEventScalarFieldEnum =
   (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum];
+
+export const PlatformAlpacaOrderScalarFieldEnum = {
+  id: 'id',
+  alpacaOrderId: 'alpacaOrderId',
+  clientOrderId: 'clientOrderId',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PlatformAlpacaOrderScalarFieldEnum =
+  (typeof PlatformAlpacaOrderScalarFieldEnum)[keyof typeof PlatformAlpacaOrderScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',
