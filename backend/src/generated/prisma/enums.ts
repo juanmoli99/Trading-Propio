@@ -15,3 +15,17 @@ export const RecordStatus = {
 } as const;
 
 export type RecordStatus = (typeof RecordStatus)[keyof typeof RecordStatus];
+
+export const AuditAction = {
+  REAUTHENTICATION: 'REAUTHENTICATION',
+  REVOKE_ALL_SESSIONS: 'REVOKE_ALL_SESSIONS',
+} as const;
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction];
+
+export const AuditOutcome = {
+  SUCCESS: 'SUCCESS',
+  FAILURE: 'FAILURE',
+} as const;
+
+export type AuditOutcome = (typeof AuditOutcome)[keyof typeof AuditOutcome];

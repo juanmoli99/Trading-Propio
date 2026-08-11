@@ -58,6 +58,9 @@ export const ModelName = {
   SystemMetadataRevision: 'SystemMetadataRevision',
   FinancialConstraintProbe: 'FinancialConstraintProbe',
   PersistentLock: 'PersistentLock',
+  SingleOperator: 'SingleOperator',
+  AuthSession: 'AuthSession',
+  AuditEvent: 'AuditEvent',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -122,6 +125,50 @@ export const PersistentLockScalarFieldEnum = {
 export type PersistentLockScalarFieldEnum =
   (typeof PersistentLockScalarFieldEnum)[keyof typeof PersistentLockScalarFieldEnum];
 
+export const SingleOperatorScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  displayName: 'displayName',
+  passwordHash: 'passwordHash',
+  enabled: 'enabled',
+  failedLoginAttempts: 'failedLoginAttempts',
+  failedLoginWindowStartAt: 'failedLoginWindowStartAt',
+  lastFailedLoginAt: 'lastFailedLoginAt',
+  loginLockedUntil: 'loginLockedUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type SingleOperatorScalarFieldEnum =
+  (typeof SingleOperatorScalarFieldEnum)[keyof typeof SingleOperatorScalarFieldEnum];
+
+export const AuthSessionScalarFieldEnum = {
+  id: 'id',
+  operatorId: 'operatorId',
+  tokenHash: 'tokenHash',
+  csrfTokenHash: 'csrfTokenHash',
+  expiresAt: 'expiresAt',
+  reauthenticatedUntil: 'reauthenticatedUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AuthSessionScalarFieldEnum =
+  (typeof AuthSessionScalarFieldEnum)[keyof typeof AuthSessionScalarFieldEnum];
+
+export const AuditEventScalarFieldEnum = {
+  id: 'id',
+  operatorId: 'operatorId',
+  action: 'action',
+  outcome: 'outcome',
+  correlationId: 'correlationId',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+} as const;
+
+export type AuditEventScalarFieldEnum =
+  (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum];
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc',
@@ -129,9 +176,33 @@ export const SortOrder = {
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+} as const;
+
+export type NullableJsonNullValueInput =
+  (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive',
 } as const;
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode];
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last',
+} as const;
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull,
+} as const;
+
+export type JsonNullValueFilter =
+  (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];

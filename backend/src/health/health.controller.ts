@@ -1,6 +1,8 @@
-﻿import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
+﻿import { Controller, Get } from '@nestjs/common';
+import { Public } from '../auth/public.decorator';
 import { HealthService } from './health.service';
 
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}
@@ -15,6 +17,8 @@ export class HealthController {
     const readiness = this.healthService.getReadiness();
 
     if (!readiness.ready) {
+      const { ServiceUnavailableException } = require('@nestjs/common');
+
       throw new ServiceUnavailableException(readiness);
     }
 

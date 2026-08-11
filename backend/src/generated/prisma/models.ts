@@ -11,4 +11,7 @@ export type * from './models/SystemMetadata.js';
 export type * from './models/SystemMetadataRevision.js';
 export type * from './models/FinancialConstraintProbe.js';
 export type * from './models/PersistentLock.js';
+export type * from './models/SingleOperator.js';
+export type * from './models/AuthSession.js';
+export type * from './models/AuditEvent.js';
 export type * from './commonInputTypes.js';

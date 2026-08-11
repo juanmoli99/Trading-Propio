@@ -1,9 +1,12 @@
-﻿import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import alpacaLiveConfig from './alpaca-live.config';
 import alpacaPaperConfig from './alpaca-paper.config';
 import appConfig from './app.config';
+import authConfig from './auth.config';
+import corsConfig from './cors.config';
 import databaseConfig from './database.config';
+import hardCapsConfig from './hard-caps.config';
 import { validateEnvironment } from './env.validation';
 import operationalConfig from './operational.config';
 
@@ -11,7 +14,16 @@ import operationalConfig from './operational.config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, operationalConfig, alpacaPaperConfig, alpacaLiveConfig],
+      load: [
+        appConfig,
+        authConfig,
+        corsConfig,
+        operationalConfig,
+        databaseConfig,
+        hardCapsConfig,
+        alpacaPaperConfig,
+        alpacaLiveConfig,
+      ],
       validate: validateEnvironment,
     }),
   ],

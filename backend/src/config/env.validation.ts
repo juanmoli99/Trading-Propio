@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
 export const environmentNames = [
   'development',
@@ -74,6 +74,32 @@ const environmentSchema = z
 
     ENABLE_LIVE_TRADING: z.enum(['true', 'false']).default('false'),
     LIVE_TRADING_CONFIRMATION: z.string().optional(),
+
+    SINGLE_OPERATOR_USERNAME: z.string().min(1).optional(),
+    SINGLE_OPERATOR_DISPLAY_NAME: z.string().min(1).optional(),
+    SINGLE_OPERATOR_BOOTSTRAP_PASSWORD: z.string().min(12).optional(),
+    CORS_ALLOWED_ORIGINS: z.string().optional(),
+
+    HARD_CAP_MAX_ORDER_NOTIONAL: z.coerce
+      .number()
+      .positive()
+      .finite()
+      .default(1000),
+
+    HARD_CAP_MAX_TOTAL_CAPITAL: z.coerce
+      .number()
+      .positive()
+      .finite()
+      .default(5000),
+
+    HARD_CAP_MAX_DAILY_LOSS: z.coerce.number().positive().finite().default(200),
+
+    HARD_CAP_MAX_DRAWDOWN_PERCENT: z.coerce
+      .number()
+      .positive()
+      .max(100)
+      .finite()
+      .default(10),
   })
   .superRefine((config, context) => {
     if (config.TRADING_MODE === 'PAPER') {

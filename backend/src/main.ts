@@ -1,6 +1,8 @@
 ﻿import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { json, urlencoded } from 'express';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { CorrelationContextService } from './common/correlation/correlation-context.service';
 import { GlobalExceptionFilter } from './common/errors/global-exception.filter';
@@ -68,6 +70,7 @@ async function shutdownApplication(
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
+    bodyParser: false,
   });
 
   const logger = app.get(SanitizedLogger);
@@ -83,6 +86,37 @@ async function bootstrap(): Promise<void> {
 
   const gracefulShutdownTimeoutMs =
     configService.get<number>('operational.gracefulShutdownTimeoutMs') ?? 10000;
+
+  const allowedOrigins =
+    configService.get<string[]>('cors.allowedOrigins') ?? [];
+
+  app.use(
+    json({
+      limit: '64kb',
+    }),
+  );
+
+  app.use(
+    urlencoded({
+      limit: '32kb',
+      extended: false,
+      parameterLimit: 100,
+    }),
+  );
+
+  app.use(
+    helmet({
+      hsts: false,
+    }),
+  );
+
+  app.enableCors({
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'X-CSRF-Token', 'X-Correlation-Id'],
+    exposedHeaders: ['X-Correlation-Id'],
+  });
 
   operationalState.setStatus('BLOCKED', 'Application startup in progress');
 

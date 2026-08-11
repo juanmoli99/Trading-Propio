@@ -431,6 +431,9 @@ export const ModelName = {
   SystemMetadataRevision: 'SystemMetadataRevision',
   FinancialConstraintProbe: 'FinancialConstraintProbe',
   PersistentLock: 'PersistentLock',
+  SingleOperator: 'SingleOperator',
+  AuthSession: 'AuthSession',
+  AuditEvent: 'AuditEvent',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -456,7 +459,10 @@ export type TypeMap<
       | 'systemMetadata'
       | 'systemMetadataRevision'
       | 'financialConstraintProbe'
-      | 'persistentLock';
+      | 'persistentLock'
+      | 'singleOperator'
+      | 'authSession'
+      | 'auditEvent';
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -764,6 +770,234 @@ export type TypeMap<
         };
       };
     };
+    SingleOperator: {
+      payload: Prisma.$SingleOperatorPayload<ExtArgs>;
+      fields: Prisma.SingleOperatorFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.SingleOperatorFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.SingleOperatorFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>;
+        };
+        findFirst: {
+          args: Prisma.SingleOperatorFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.SingleOperatorFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>;
+        };
+        findMany: {
+          args: Prisma.SingleOperatorFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>[];
+        };
+        create: {
+          args: Prisma.SingleOperatorCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>;
+        };
+        createMany: {
+          args: Prisma.SingleOperatorCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.SingleOperatorCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>[];
+        };
+        delete: {
+          args: Prisma.SingleOperatorDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>;
+        };
+        update: {
+          args: Prisma.SingleOperatorUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>;
+        };
+        deleteMany: {
+          args: Prisma.SingleOperatorDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.SingleOperatorUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.SingleOperatorUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>[];
+        };
+        upsert: {
+          args: Prisma.SingleOperatorUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SingleOperatorPayload>;
+        };
+        aggregate: {
+          args: Prisma.SingleOperatorAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSingleOperator>;
+        };
+        groupBy: {
+          args: Prisma.SingleOperatorGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.SingleOperatorGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.SingleOperatorCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.SingleOperatorCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
+    AuthSession: {
+      payload: Prisma.$AuthSessionPayload<ExtArgs>;
+      fields: Prisma.AuthSessionFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AuthSessionFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AuthSessionFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>;
+        };
+        findFirst: {
+          args: Prisma.AuthSessionFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AuthSessionFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>;
+        };
+        findMany: {
+          args: Prisma.AuthSessionFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>[];
+        };
+        create: {
+          args: Prisma.AuthSessionCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>;
+        };
+        createMany: {
+          args: Prisma.AuthSessionCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AuthSessionCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>[];
+        };
+        delete: {
+          args: Prisma.AuthSessionDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>;
+        };
+        update: {
+          args: Prisma.AuthSessionUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>;
+        };
+        deleteMany: {
+          args: Prisma.AuthSessionDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AuthSessionUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AuthSessionUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>[];
+        };
+        upsert: {
+          args: Prisma.AuthSessionUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuthSessionPayload>;
+        };
+        aggregate: {
+          args: Prisma.AuthSessionAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuthSession>;
+        };
+        groupBy: {
+          args: Prisma.AuthSessionGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AuthSessionGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AuthSessionCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.AuthSessionCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
+    AuditEvent: {
+      payload: Prisma.$AuditEventPayload<ExtArgs>;
+      fields: Prisma.AuditEventFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AuditEventFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AuditEventFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>;
+        };
+        findFirst: {
+          args: Prisma.AuditEventFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AuditEventFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>;
+        };
+        findMany: {
+          args: Prisma.AuditEventFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>[];
+        };
+        create: {
+          args: Prisma.AuditEventCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>;
+        };
+        createMany: {
+          args: Prisma.AuditEventCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AuditEventCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>[];
+        };
+        delete: {
+          args: Prisma.AuditEventDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>;
+        };
+        update: {
+          args: Prisma.AuditEventUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>;
+        };
+        deleteMany: {
+          args: Prisma.AuditEventDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AuditEventUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AuditEventUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>[];
+        };
+        upsert: {
+          args: Prisma.AuditEventUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditEventPayload>;
+        };
+        aggregate: {
+          args: Prisma.AuditEventAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditEvent>;
+        };
+        groupBy: {
+          args: Prisma.AuditEventGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AuditEventGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AuditEventCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.AuditEventCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -849,6 +1083,50 @@ export const PersistentLockScalarFieldEnum = {
 export type PersistentLockScalarFieldEnum =
   (typeof PersistentLockScalarFieldEnum)[keyof typeof PersistentLockScalarFieldEnum];
 
+export const SingleOperatorScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  displayName: 'displayName',
+  passwordHash: 'passwordHash',
+  enabled: 'enabled',
+  failedLoginAttempts: 'failedLoginAttempts',
+  failedLoginWindowStartAt: 'failedLoginWindowStartAt',
+  lastFailedLoginAt: 'lastFailedLoginAt',
+  loginLockedUntil: 'loginLockedUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type SingleOperatorScalarFieldEnum =
+  (typeof SingleOperatorScalarFieldEnum)[keyof typeof SingleOperatorScalarFieldEnum];
+
+export const AuthSessionScalarFieldEnum = {
+  id: 'id',
+  operatorId: 'operatorId',
+  tokenHash: 'tokenHash',
+  csrfTokenHash: 'csrfTokenHash',
+  expiresAt: 'expiresAt',
+  reauthenticatedUntil: 'reauthenticatedUntil',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AuthSessionScalarFieldEnum =
+  (typeof AuthSessionScalarFieldEnum)[keyof typeof AuthSessionScalarFieldEnum];
+
+export const AuditEventScalarFieldEnum = {
+  id: 'id',
+  operatorId: 'operatorId',
+  action: 'action',
+  outcome: 'outcome',
+  correlationId: 'correlationId',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+} as const;
+
+export type AuditEventScalarFieldEnum =
+  (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum];
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc',
@@ -856,12 +1134,36 @@ export const SortOrder = {
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+} as const;
+
+export type NullableJsonNullValueInput =
+  (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput];
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive',
 } as const;
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode];
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last',
+} as const;
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull,
+} as const;
+
+export type JsonNullValueFilter =
+  (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];
 
 /**
  * Field references
@@ -945,6 +1247,62 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
   'Decimal[]'
+>;
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'Boolean'
+>;
+
+/**
+ * Reference to a field of type 'AuditAction'
+ */
+export type EnumAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'AuditAction'
+>;
+
+/**
+ * Reference to a field of type 'AuditAction[]'
+ */
+export type ListEnumAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'AuditAction[]'
+>;
+
+/**
+ * Reference to a field of type 'AuditOutcome'
+ */
+export type EnumAuditOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'AuditOutcome'
+>;
+
+/**
+ * Reference to a field of type 'AuditOutcome[]'
+ */
+export type ListEnumAuditOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'AuditOutcome[]'
+>;
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'Json'
+>;
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'QueryMode'
 >;
 
 /**
@@ -1124,6 +1482,9 @@ export type GlobalOmitConfig = {
   systemMetadataRevision?: Prisma.SystemMetadataRevisionOmit;
   financialConstraintProbe?: Prisma.FinancialConstraintProbeOmit;
   persistentLock?: Prisma.PersistentLockOmit;
+  singleOperator?: Prisma.SingleOperatorOmit;
+  authSession?: Prisma.AuthSessionOmit;
+  auditEvent?: Prisma.AuditEventOmit;
 };
 
 /* Types for Logging */

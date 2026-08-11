@@ -19,6 +19,12 @@ interface ErrorResponse {
   correlationId?: string;
 }
 
+interface HttpLikeError {
+  status?: unknown;
+  statusCode?: unknown;
+  message?: unknown;
+}
+
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   constructor(
@@ -36,12 +42,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       url?: string;
     }>();
 
-    const statusCode =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const message = this.getMessage(exception);
+    const statusCode = this.getStatusCode(exception);
+    const message = this.getMessage(exception, statusCode);
     const classification = classifyError(exception);
     const correlationId = this.correlationContext.getCorrelationId();
 
@@ -68,36 +70,70 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     httpAdapter.reply(context.getResponse(), response, statusCode);
   }
 
-  private getMessage(exception: unknown): string | string[] {
-    if (!(exception instanceof HttpException)) {
-      return 'Internal server error';
+  private getStatusCode(exception: unknown): number {
+    if (exception instanceof HttpException) {
+      return exception.getStatus();
     }
 
-    const response = exception.getResponse();
+    if (typeof exception === 'object' && exception !== null) {
+      const httpError = exception as HttpLikeError;
 
-    if (typeof response === 'string') {
-      return response;
+      const candidate =
+        typeof httpError.status === 'number'
+          ? httpError.status
+          : typeof httpError.statusCode === 'number'
+            ? httpError.statusCode
+            : undefined;
+
+      if (candidate !== undefined && candidate >= 400 && candidate <= 599) {
+        return candidate;
+      }
     }
 
-    if (
-      typeof response === 'object' &&
-      response !== null &&
-      'message' in response
-    ) {
-      const message = (response as { message?: unknown }).message;
+    return HttpStatus.INTERNAL_SERVER_ERROR;
+  }
 
-      if (typeof message === 'string') {
-        return message;
+  private getMessage(
+    exception: unknown,
+    statusCode: number,
+  ): string | string[] {
+    if (exception instanceof HttpException) {
+      const response = exception.getResponse();
+
+      if (typeof response === 'string') {
+        return response;
       }
 
       if (
-        Array.isArray(message) &&
-        message.every((item) => typeof item === 'string')
+        typeof response === 'object' &&
+        response !== null &&
+        'message' in response
       ) {
-        return message;
+        const message = (
+          response as {
+            message?: unknown;
+          }
+        ).message;
+
+        if (typeof message === 'string') {
+          return message;
+        }
+
+        if (
+          Array.isArray(message) &&
+          message.every((item) => typeof item === 'string')
+        ) {
+          return message;
+        }
       }
+
+      return exception.message;
     }
 
-    return exception.message;
+    if (statusCode === HttpStatus.PAYLOAD_TOO_LARGE) {
+      return 'Payload too large';
+    }
+
+    return 'Internal server error';
   }
 }

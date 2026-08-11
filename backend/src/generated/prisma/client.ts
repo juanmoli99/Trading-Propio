@@ -64,3 +64,18 @@ export type FinancialConstraintProbe = Prisma.FinancialConstraintProbeModel;
  *
  */
 export type PersistentLock = Prisma.PersistentLockModel;
+/**
+ * Model SingleOperator
+ *
+ */
+export type SingleOperator = Prisma.SingleOperatorModel;
+/**
+ * Model AuthSession
+ *
+ */
+export type AuthSession = Prisma.AuthSessionModel;
+/**
+ * Model AuditEvent
+ *
+ */
+export type AuditEvent = Prisma.AuditEventModel;
