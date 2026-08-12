@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import alpacaLiveConfig from './alpaca-live.config';
 import alpacaPaperConfig from './alpaca-paper.config';
@@ -7,6 +7,7 @@ import authConfig from './auth.config';
 import corsConfig from './cors.config';
 import databaseConfig from './database.config';
 import hardCapsConfig from './hard-caps.config';
+import marketDataConfig from './market-data.config';
 import { validateEnvironment } from './env.validation';
 import operationalConfig from './operational.config';
 
@@ -21,6 +22,7 @@ import operationalConfig from './operational.config';
         operationalConfig,
         databaseConfig,
         hardCapsConfig,
+      marketDataConfig,
         alpacaPaperConfig,
         alpacaLiveConfig,
       ],
@@ -29,3 +31,4 @@ import operationalConfig from './operational.config';
   ],
 })
 export class AppConfigModule {}
+

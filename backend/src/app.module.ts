@@ -21,6 +21,7 @@ import { StartupModule } from './common/startup/startup.module';
 import { AppConfigModule } from './config/app-config.module';
 import { PrismaModule } from './database/prisma.module';
 import { HealthModule } from './health/health.module';
+import { MarketDataModule } from './market-data/market-data.module';
 import { RegulatoryRulesModule } from './regulatory/regulatory-rules.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { RegulatoryRulesModule } from './regulatory/regulatory-rules.module';
     PrismaModule,
     RegulatoryRulesModule,
     AlpacaModule,
+    MarketDataModule,
     CorrelationModule,
     AuditModule,
     HardCapsModule,

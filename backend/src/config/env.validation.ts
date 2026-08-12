@@ -1,4 +1,9 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
+import {
+  MARKET_DATA_MAX_AGE_DEFAULT_MS,
+  MARKET_DATA_MAX_AGE_MAX_MS,
+  MARKET_DATA_MAX_AGE_MIN_MS,
+} from './market-data-age.constants';
 
 export const environmentNames = [
   'development',
@@ -37,6 +42,13 @@ const environmentSchema = z
     TRADING_MODE: z.enum(tradingModes).default('PAPER'),
     APP_TIMEZONE: timeZoneSchema.default('UTC'),
     BASE_CURRENCY: z.enum(baseCurrencies).default('USD'),
+
+    MARKET_DATA_MAX_AGE_MS: z.coerce
+      .number()
+      .int()
+      .min(MARKET_DATA_MAX_AGE_MIN_MS)
+      .max(MARKET_DATA_MAX_AGE_MAX_MS)
+      .default(MARKET_DATA_MAX_AGE_DEFAULT_MS),
 
     DATABASE_URL: z.url(),
     DIRECT_URL: z.url(),
@@ -80,7 +92,9 @@ const environmentSchema = z
 
     ALPACA_PAPER_API_KEY: z.string().min(1).optional(),
     ALPACA_PAPER_API_SECRET: z.string().min(1).optional(),
-    ALPACA_PAPER_BASE_URL: z.url().default('https://paper-api.alpaca.markets'),
+    ALPACA_PAPER_BASE_URL: z
+      .url()
+      .default('https://paper-api.alpaca.markets'),
 
     ALPACA_LIVE_API_KEY: z.string().min(1).optional(),
     ALPACA_LIVE_API_SECRET: z.string().min(1).optional(),

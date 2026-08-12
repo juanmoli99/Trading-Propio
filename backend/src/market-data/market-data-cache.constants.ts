@@ -1,0 +1,6 @@
+export const MARKET_DATA_CACHE_TTL_MS = {
+  LATEST: 250,
+  HISTORICAL: 5_000,
+} as const;
+
+export const MARKET_DATA_CACHE_MAX_ENTRIES = 2_000;

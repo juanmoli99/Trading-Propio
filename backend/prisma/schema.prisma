@@ -14,6 +14,14 @@ enum RecordStatus {
   ARCHIVED
 }
 
+
+enum MarketDataAnomalyType {
+  FUTURE_BAR
+  MISSING_BAR_GAP
+  OUTSIDE_SESSION
+  PRICE_SANITY
+  TOO_OLD_DATA
+}
 enum AlpacaMarginClassification {
   LIMITED_MARGIN_1X
   REG_T_MARGIN_2X
@@ -174,3 +182,22 @@ model AlpacaAccountRestrictionSnapshot {
   @@index([tradingAllowed])
   @@index([syncedAt])
 }
+
+model MarketDataAnomaly {
+  id            String                @id @default(cuid())
+  type          MarketDataAnomalyType
+  symbol        String?
+  timestamp     DateTime?
+  referenceAt   DateTime?
+  details       Json
+  correlationId String?
+  detectedAt    DateTime              @default(now())
+  createdAt     DateTime              @default(now())
+
+  @@index([type])
+  @@index([symbol])
+  @@index([timestamp])
+  @@index([detectedAt])
+  @@index([correlationId])
+}
+

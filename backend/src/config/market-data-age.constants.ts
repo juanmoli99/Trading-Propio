@@ -1,0 +1,3 @@
+﻿export const MARKET_DATA_MAX_AGE_DEFAULT_MS = 120_000;
+export const MARKET_DATA_MAX_AGE_MIN_MS = 1_000;
+export const MARKET_DATA_MAX_AGE_MAX_MS = 3_600_000;
