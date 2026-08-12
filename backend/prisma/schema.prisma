@@ -14,6 +14,12 @@ enum RecordStatus {
   ARCHIVED
 }
 
+enum AlpacaMarginClassification {
+  LIMITED_MARGIN_1X
+  REG_T_MARGIN_2X
+  INTRADAY_MARGIN_4X
+}
+
 model SystemMetadata {
   id        String                   @id @default(cuid())
   key       String                   @unique
@@ -128,4 +134,43 @@ model PlatformAlpacaOrder {
 
   @@index([symbol])
   @@index([createdAt])
+}
+
+model AlpacaAccountRestrictionSnapshot {
+  id                    String                     @id @default(cuid())
+  alpacaAccountId       String                     @unique
+  accountStatus         String
+  marginClassification AlpacaMarginClassification
+  multiplier            Int
+
+  tradingBlocked        Boolean
+  accountBlocked        Boolean
+  transfersBlocked      Boolean
+  tradeSuspendedByUser  Boolean
+  shortingDisabled      Boolean
+  leverageDisabled      Boolean
+
+  tradingAllowed        Boolean
+  transfersAllowed      Boolean
+  shortingAllowed       Boolean
+  leverageAllowed       Boolean
+
+  buyingPower           Decimal                    @db.Decimal(20, 8)
+  regtBuyingPower       Decimal                    @db.Decimal(20, 8)
+  nonMarginableBuyingPower Decimal                  @db.Decimal(20, 8)
+
+  initialMargin         Decimal                    @db.Decimal(20, 8)
+  maintenanceMargin     Decimal                    @db.Decimal(20, 8)
+  lastMaintenanceMargin Decimal                    @db.Decimal(20, 8)
+  sma                   Decimal                    @db.Decimal(20, 8)
+
+  syncedAt              DateTime
+  version               Int                        @default(0)
+  createdAt             DateTime                   @default(now())
+  updatedAt             DateTime                   @updatedAt
+
+  @@index([accountStatus])
+  @@index([marginClassification])
+  @@index([tradingAllowed])
+  @@index([syncedAt])
 }

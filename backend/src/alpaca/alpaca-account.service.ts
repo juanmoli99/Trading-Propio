@@ -21,6 +21,11 @@ interface AlpacaAccountApiResponse {
   multiplier?: unknown;
   regt_buying_power?: unknown;
   non_marginable_buying_power?: unknown;
+
+  initial_margin?: unknown;
+  maintenance_margin?: unknown;
+  last_maintenance_margin?: unknown;
+  sma?: unknown;
 }
 
 @Injectable()

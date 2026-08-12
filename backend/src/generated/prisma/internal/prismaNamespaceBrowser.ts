@@ -62,6 +62,7 @@ export const ModelName = {
   AuthSession: 'AuthSession',
   AuditEvent: 'AuditEvent',
   PlatformAlpacaOrder: 'PlatformAlpacaOrder',
+  AlpacaAccountRestrictionSnapshot: 'AlpacaAccountRestrictionSnapshot',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -181,6 +182,38 @@ export const PlatformAlpacaOrderScalarFieldEnum = {
 
 export type PlatformAlpacaOrderScalarFieldEnum =
   (typeof PlatformAlpacaOrderScalarFieldEnum)[keyof typeof PlatformAlpacaOrderScalarFieldEnum];
+
+export const AlpacaAccountRestrictionSnapshotScalarFieldEnum = {
+  id: 'id',
+  alpacaAccountId: 'alpacaAccountId',
+  accountStatus: 'accountStatus',
+  marginClassification: 'marginClassification',
+  multiplier: 'multiplier',
+  tradingBlocked: 'tradingBlocked',
+  accountBlocked: 'accountBlocked',
+  transfersBlocked: 'transfersBlocked',
+  tradeSuspendedByUser: 'tradeSuspendedByUser',
+  shortingDisabled: 'shortingDisabled',
+  leverageDisabled: 'leverageDisabled',
+  tradingAllowed: 'tradingAllowed',
+  transfersAllowed: 'transfersAllowed',
+  shortingAllowed: 'shortingAllowed',
+  leverageAllowed: 'leverageAllowed',
+  buyingPower: 'buyingPower',
+  regtBuyingPower: 'regtBuyingPower',
+  nonMarginableBuyingPower: 'nonMarginableBuyingPower',
+  initialMargin: 'initialMargin',
+  maintenanceMargin: 'maintenanceMargin',
+  lastMaintenanceMargin: 'lastMaintenanceMargin',
+  sma: 'sma',
+  syncedAt: 'syncedAt',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AlpacaAccountRestrictionSnapshotScalarFieldEnum =
+  (typeof AlpacaAccountRestrictionSnapshotScalarFieldEnum)[keyof typeof AlpacaAccountRestrictionSnapshotScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',

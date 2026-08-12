@@ -56,3 +56,9 @@ export type AuditEvent = Prisma.AuditEventModel;
  *
  */
 export type PlatformAlpacaOrder = Prisma.PlatformAlpacaOrderModel;
+/**
+ * Model AlpacaAccountRestrictionSnapshot
+ *
+ */
+export type AlpacaAccountRestrictionSnapshot =
+  Prisma.AlpacaAccountRestrictionSnapshotModel;

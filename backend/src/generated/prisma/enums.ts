@@ -16,6 +16,15 @@ export const RecordStatus = {
 
 export type RecordStatus = (typeof RecordStatus)[keyof typeof RecordStatus];
 
+export const AlpacaMarginClassification = {
+  LIMITED_MARGIN_1X: 'LIMITED_MARGIN_1X',
+  REG_T_MARGIN_2X: 'REG_T_MARGIN_2X',
+  INTRADAY_MARGIN_4X: 'INTRADAY_MARGIN_4X',
+} as const;
+
+export type AlpacaMarginClassification =
+  (typeof AlpacaMarginClassification)[keyof typeof AlpacaMarginClassification];
+
 export const AuditAction = {
   REAUTHENTICATION: 'REAUTHENTICATION',
   REVOKE_ALL_SESSIONS: 'REVOKE_ALL_SESSIONS',

@@ -1,4 +1,7 @@
-﻿import type { AlpacaAccount } from './alpaca-account.types';
+﻿import type {
+  AlpacaAccount,
+  AlpacaAccountMarginClassification,
+} from './alpaca-account.types';
 
 interface AlpacaAccountApiResponse {
   id?: unknown;
@@ -18,6 +21,11 @@ interface AlpacaAccountApiResponse {
   multiplier?: unknown;
   regt_buying_power?: unknown;
   non_marginable_buying_power?: unknown;
+
+  initial_margin?: unknown;
+  maintenance_margin?: unknown;
+  last_maintenance_margin?: unknown;
+  sma?: unknown;
 }
 
 export function normalizeAlpacaAccount(
@@ -45,6 +53,58 @@ export function normalizeAlpacaAccount(
     'trade_suspended_by_user',
   );
 
+  const shortingEnabled = requireBoolean(
+    value.shorting_enabled,
+    'shorting_enabled',
+  );
+
+  const multiplier = requireMarginMultiplier(value.multiplier, 'multiplier');
+
+  const buyingPower = requireNonNegativeFinancialString(
+    value.buying_power,
+    'buying_power',
+  );
+
+  const regtBuyingPower = requireNonNegativeFinancialString(
+    value.regt_buying_power,
+    'regt_buying_power',
+  );
+
+  const nonMarginableBuyingPower = requireNonNegativeFinancialString(
+    value.non_marginable_buying_power,
+    'non_marginable_buying_power',
+  );
+
+  const initialMargin = requireNonNegativeFinancialString(
+    value.initial_margin,
+    'initial_margin',
+  );
+
+  const maintenanceMargin = requireNonNegativeFinancialString(
+    value.maintenance_margin,
+    'maintenance_margin',
+  );
+
+  const lastMaintenanceMargin = requireNonNegativeFinancialString(
+    value.last_maintenance_margin,
+    'last_maintenance_margin',
+  );
+
+  const sma = requireFinancialString(value.sma, 'sma');
+
+  const tradingAllowed =
+    status === 'ACTIVE' &&
+    !tradingBlocked &&
+    !accountBlocked &&
+    !tradeSuspendedByUser;
+
+  const transfersAllowed =
+    status === 'ACTIVE' && !accountBlocked && !transfersBlocked;
+
+  const leverageAllowed = Number(multiplier) > 1;
+
+  const shortingAllowed = tradingAllowed && shortingEnabled && leverageAllowed;
+
   return {
     id: requireString(value.id, 'id'),
 
@@ -56,7 +116,7 @@ export function normalizeAlpacaAccount(
 
     equity: requireFinancialString(value.equity, 'equity'),
 
-    buyingPower: requireFinancialString(value.buying_power, 'buying_power'),
+    buyingPower,
 
     portfolioValue: requireFinancialString(
       value.portfolio_value,
@@ -68,29 +128,85 @@ export function normalizeAlpacaAccount(
     transfersBlocked,
     tradeSuspendedByUser,
 
-    shortingEnabled: requireBoolean(value.shorting_enabled, 'shorting_enabled'),
+    shortingEnabled,
 
-    multiplier: requireNonNegativeFinancialString(
-      value.multiplier,
-      'multiplier',
-    ),
+    multiplier,
 
-    regtBuyingPower: requireFinancialString(
-      value.regt_buying_power,
-      'regt_buying_power',
-    ),
+    regtBuyingPower,
 
-    nonMarginableBuyingPower: requireFinancialString(
-      value.non_marginable_buying_power,
-      'non_marginable_buying_power',
-    ),
+    nonMarginableBuyingPower,
 
-    tradingAllowed:
-      status === 'ACTIVE' &&
-      !tradingBlocked &&
-      !accountBlocked &&
-      !tradeSuspendedByUser,
+    initialMargin,
+
+    maintenanceMargin,
+
+    lastMaintenanceMargin,
+
+    sma,
+
+    accountType: 'MARGIN',
+
+    marginClassification: classifyMarginMultiplier(multiplier),
+
+    restrictions: {
+      tradingBlocked,
+      accountBlocked,
+      transfersBlocked,
+      tradeSuspendedByUser,
+      shortingDisabled: !shortingEnabled,
+      leverageDisabled: !leverageAllowed,
+    },
+
+    capabilities: {
+      tradingAllowed,
+      transfersAllowed,
+      shortingAllowed,
+      leverageAllowed,
+    },
+
+    buyingPowerSummary: {
+      effective: buyingPower,
+      regT: regtBuyingPower,
+      nonMarginable: nonMarginableBuyingPower,
+      intradayMultiplier: Number(multiplier),
+      overnightMultiplier: resolveOvernightMultiplier(multiplier),
+    },
+
+    marginRequirements: {
+      initial: initialMargin,
+      maintenance: maintenanceMargin,
+      previousMaintenance: lastMaintenanceMargin,
+      specialMemorandumAccount: sma,
+    },
+
+    tradingAllowed,
   };
+}
+
+function classifyMarginMultiplier(
+  multiplier: string,
+): AlpacaAccountMarginClassification {
+  switch (multiplier) {
+    case '1':
+      return 'LIMITED_MARGIN_1X';
+
+    case '2':
+      return 'REG_T_MARGIN_2X';
+
+    case '4':
+      return 'INTRADAY_MARGIN_4X';
+
+    default:
+      throw new Error(`Unsupported Alpaca margin multiplier: ${multiplier}`);
+  }
+}
+
+function resolveOvernightMultiplier(multiplier: string): number {
+  if (multiplier === '4') {
+    return 2;
+  }
+
+  return Number(multiplier);
 }
 
 function requireString(value: unknown, field: string): string {
@@ -121,6 +237,16 @@ function requireNonNegativeFinancialString(
 
   if (Number(result) < 0) {
     throw new Error(`Invalid Alpaca financial field: ${field}`);
+  }
+
+  return result;
+}
+
+function requireMarginMultiplier(value: unknown, field: string): string {
+  const result = requireFinancialString(value, field);
+
+  if (result !== '1' && result !== '2' && result !== '4') {
+    throw new Error(`Unsupported Alpaca margin multiplier: ${result}`);
   }
 
   return result;

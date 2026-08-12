@@ -435,6 +435,7 @@ export const ModelName = {
   AuthSession: 'AuthSession',
   AuditEvent: 'AuditEvent',
   PlatformAlpacaOrder: 'PlatformAlpacaOrder',
+  AlpacaAccountRestrictionSnapshot: 'AlpacaAccountRestrictionSnapshot',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -464,7 +465,8 @@ export type TypeMap<
       | 'singleOperator'
       | 'authSession'
       | 'auditEvent'
-      | 'platformAlpacaOrder';
+      | 'platformAlpacaOrder'
+      | 'alpacaAccountRestrictionSnapshot';
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -1076,6 +1078,82 @@ export type TypeMap<
         };
       };
     };
+    AlpacaAccountRestrictionSnapshot: {
+      payload: Prisma.$AlpacaAccountRestrictionSnapshotPayload<ExtArgs>;
+      fields: Prisma.AlpacaAccountRestrictionSnapshotFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>;
+        };
+        findFirst: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>;
+        };
+        findMany: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>[];
+        };
+        create: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>;
+        };
+        createMany: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>[];
+        };
+        delete: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>;
+        };
+        update: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>;
+        };
+        deleteMany: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>[];
+        };
+        upsert: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AlpacaAccountRestrictionSnapshotPayload>;
+        };
+        aggregate: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAlpacaAccountRestrictionSnapshot>;
+        };
+        groupBy: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AlpacaAccountRestrictionSnapshotGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.AlpacaAccountRestrictionSnapshotCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.AlpacaAccountRestrictionSnapshotCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -1216,6 +1294,38 @@ export const PlatformAlpacaOrderScalarFieldEnum = {
 
 export type PlatformAlpacaOrderScalarFieldEnum =
   (typeof PlatformAlpacaOrderScalarFieldEnum)[keyof typeof PlatformAlpacaOrderScalarFieldEnum];
+
+export const AlpacaAccountRestrictionSnapshotScalarFieldEnum = {
+  id: 'id',
+  alpacaAccountId: 'alpacaAccountId',
+  accountStatus: 'accountStatus',
+  marginClassification: 'marginClassification',
+  multiplier: 'multiplier',
+  tradingBlocked: 'tradingBlocked',
+  accountBlocked: 'accountBlocked',
+  transfersBlocked: 'transfersBlocked',
+  tradeSuspendedByUser: 'tradeSuspendedByUser',
+  shortingDisabled: 'shortingDisabled',
+  leverageDisabled: 'leverageDisabled',
+  tradingAllowed: 'tradingAllowed',
+  transfersAllowed: 'transfersAllowed',
+  shortingAllowed: 'shortingAllowed',
+  leverageAllowed: 'leverageAllowed',
+  buyingPower: 'buyingPower',
+  regtBuyingPower: 'regtBuyingPower',
+  nonMarginableBuyingPower: 'nonMarginableBuyingPower',
+  initialMargin: 'initialMargin',
+  maintenanceMargin: 'maintenanceMargin',
+  lastMaintenanceMargin: 'lastMaintenanceMargin',
+  sma: 'sma',
+  syncedAt: 'syncedAt',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AlpacaAccountRestrictionSnapshotScalarFieldEnum =
+  (typeof AlpacaAccountRestrictionSnapshotScalarFieldEnum)[keyof typeof AlpacaAccountRestrictionSnapshotScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',
@@ -1394,6 +1504,18 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
   'QueryMode'
 >;
+
+/**
+ * Reference to a field of type 'AlpacaMarginClassification'
+ */
+export type EnumAlpacaMarginClassificationFieldRefInput<$PrismaModel> =
+  FieldRefInputType<$PrismaModel, 'AlpacaMarginClassification'>;
+
+/**
+ * Reference to a field of type 'AlpacaMarginClassification[]'
+ */
+export type ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel> =
+  FieldRefInputType<$PrismaModel, 'AlpacaMarginClassification[]'>;
 
 /**
  * Reference to a field of type 'Float'
@@ -1576,6 +1698,7 @@ export type GlobalOmitConfig = {
   authSession?: Prisma.AuthSessionOmit;
   auditEvent?: Prisma.AuditEventOmit;
   platformAlpacaOrder?: Prisma.PlatformAlpacaOrderOmit;
+  alpacaAccountRestrictionSnapshot?: Prisma.AlpacaAccountRestrictionSnapshotOmit;
 };
 
 /* Types for Logging */

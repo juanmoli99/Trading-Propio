@@ -461,6 +461,41 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>;
 };
 
+export type EnumAlpacaMarginClassificationFilter<$PrismaModel = never> = {
+  equals?:
+    | $Enums.AlpacaMarginClassification
+    | Prisma.EnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  notIn?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  not?:
+    | Prisma.NestedEnumAlpacaMarginClassificationFilter<$PrismaModel>
+    | $Enums.AlpacaMarginClassification;
+};
+
+export type EnumAlpacaMarginClassificationWithAggregatesFilter<
+  $PrismaModel = never,
+> = {
+  equals?:
+    | $Enums.AlpacaMarginClassification
+    | Prisma.EnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  notIn?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  not?:
+    | Prisma.NestedEnumAlpacaMarginClassificationWithAggregatesFilter<$PrismaModel>
+    | $Enums.AlpacaMarginClassification;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumAlpacaMarginClassificationFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumAlpacaMarginClassificationFilter<$PrismaModel>;
+};
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>;
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>;
@@ -880,4 +915,39 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
     | runtime.InputJsonValue
     | Prisma.JsonFieldRefInput<$PrismaModel>
     | Prisma.JsonNullValueFilter;
+};
+
+export type NestedEnumAlpacaMarginClassificationFilter<$PrismaModel = never> = {
+  equals?:
+    | $Enums.AlpacaMarginClassification
+    | Prisma.EnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  notIn?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  not?:
+    | Prisma.NestedEnumAlpacaMarginClassificationFilter<$PrismaModel>
+    | $Enums.AlpacaMarginClassification;
+};
+
+export type NestedEnumAlpacaMarginClassificationWithAggregatesFilter<
+  $PrismaModel = never,
+> = {
+  equals?:
+    | $Enums.AlpacaMarginClassification
+    | Prisma.EnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  notIn?:
+    | $Enums.AlpacaMarginClassification[]
+    | Prisma.ListEnumAlpacaMarginClassificationFieldRefInput<$PrismaModel>;
+  not?:
+    | Prisma.NestedEnumAlpacaMarginClassificationWithAggregatesFilter<$PrismaModel>
+    | $Enums.AlpacaMarginClassification;
+  _count?: Prisma.NestedIntFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumAlpacaMarginClassificationFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumAlpacaMarginClassificationFilter<$PrismaModel>;
 };

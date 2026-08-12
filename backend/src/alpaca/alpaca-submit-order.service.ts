@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@nestjs/common';
+import { AlpacaAccountRestrictionGuardService } from './alpaca-account-restriction-guard.service';
 import { AlpacaHttpClient } from './alpaca-http-client.service';
 import { AlpacaOrderOwnershipService } from './alpaca-order-ownership.service';
 import {
@@ -25,12 +26,15 @@ export class AlpacaSubmitOrderService {
   constructor(
     private readonly httpClient: AlpacaHttpClient,
     private readonly ownershipService: AlpacaOrderOwnershipService,
+    private readonly accountRestrictionGuard: AlpacaAccountRestrictionGuardService,
   ) {}
 
   async submitOrder(request: AlpacaSubmitOrderRequest): Promise<AlpacaOrder> {
     this.assertPaperMode();
 
     const body = this.buildRequestBody(request);
+
+    await this.accountRestrictionGuard.validateOrder(request);
 
     const response = await this.httpClient.request<AlpacaOrderApiResponse>({
       method: 'POST',
@@ -172,8 +176,6 @@ export class AlpacaSubmitOrderService {
   }
 
   private isFractional(value: string): boolean {
-    const numeric = Number(value);
-
-    return !Number.isInteger(numeric);
+    return !Number.isInteger(Number(value));
   }
 }

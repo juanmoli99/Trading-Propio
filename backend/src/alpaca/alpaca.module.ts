@@ -1,4 +1,6 @@
 ﻿import { Global, Module } from '@nestjs/common';
+import { AlpacaAccountRestrictionGuardService } from './alpaca-account-restriction-guard.service';
+import { AlpacaAccountRestrictionSyncService } from './alpaca-account-restriction-sync.service';
 import { AlpacaAccountService } from './alpaca-account.service';
 import { AlpacaAssetService } from './alpaca-asset.service';
 import { AlpacaCalendarService } from './alpaca-calendar.service';
@@ -22,6 +24,8 @@ import { AlpacaSubmitOrderService } from './alpaca-submit-order.service';
 @Global()
 @Module({
   providers: [
+    AlpacaAccountRestrictionGuardService,
+    AlpacaAccountRestrictionSyncService,
     AlpacaAccountService,
     AlpacaAssetService,
     AlpacaCalendarService,
@@ -43,6 +47,8 @@ import { AlpacaSubmitOrderService } from './alpaca-submit-order.service';
     AlpacaSubmitOrderService,
   ],
   exports: [
+    AlpacaAccountRestrictionGuardService,
+    AlpacaAccountRestrictionSyncService,
     AlpacaAccountService,
     AlpacaAssetService,
     AlpacaCalendarService,
