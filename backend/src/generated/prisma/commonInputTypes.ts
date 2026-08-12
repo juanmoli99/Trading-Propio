@@ -389,6 +389,23 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonFilter<$PrismaModel>
 }
 
+export type EnumMarketDataHaltEventTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketDataHaltEventType | Prisma.EnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel> | $Enums.MarketDataHaltEventType
+}
+
+export type EnumMarketDataHaltEventTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketDataHaltEventType | Prisma.EnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketDataHaltEventTypeWithAggregatesFilter<$PrismaModel> | $Enums.MarketDataHaltEventType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -721,6 +738,23 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketDataHaltEventType | Prisma.EnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel> | $Enums.MarketDataHaltEventType
+}
+
+export type NestedEnumMarketDataHaltEventTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketDataHaltEventType | Prisma.EnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketDataHaltEventType[] | Prisma.ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketDataHaltEventTypeWithAggregatesFilter<$PrismaModel> | $Enums.MarketDataHaltEventType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMarketDataHaltEventTypeFilter<$PrismaModel>
 }
 
 

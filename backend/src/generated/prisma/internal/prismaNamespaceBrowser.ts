@@ -60,7 +60,8 @@ export const ModelName = {
   AuditEvent: 'AuditEvent',
   PlatformAlpacaOrder: 'PlatformAlpacaOrder',
   AlpacaAccountRestrictionSnapshot: 'AlpacaAccountRestrictionSnapshot',
-  MarketDataAnomaly: 'MarketDataAnomaly'
+  MarketDataAnomaly: 'MarketDataAnomaly',
+  MarketDataHaltEvent: 'MarketDataHaltEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -226,6 +227,25 @@ export const MarketDataAnomalyScalarFieldEnum = {
 } as const
 
 export type MarketDataAnomalyScalarFieldEnum = (typeof MarketDataAnomalyScalarFieldEnum)[keyof typeof MarketDataAnomalyScalarFieldEnum]
+
+
+export const MarketDataHaltEventScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  symbol: 'symbol',
+  eventAt: 'eventAt',
+  receivedAt: 'receivedAt',
+  statusCode: 'statusCode',
+  statusMessage: 'statusMessage',
+  reasonCode: 'reasonCode',
+  reasonMessage: 'reasonMessage',
+  tape: 'tape',
+  feed: 'feed',
+  correlationId: 'correlationId',
+  createdAt: 'createdAt'
+} as const
+
+export type MarketDataHaltEventScalarFieldEnum = (typeof MarketDataHaltEventScalarFieldEnum)[keyof typeof MarketDataHaltEventScalarFieldEnum]
 
 
 export const SortOrder = {

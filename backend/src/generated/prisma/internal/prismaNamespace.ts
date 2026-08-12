@@ -406,7 +406,8 @@ export const ModelName = {
   AuditEvent: 'AuditEvent',
   PlatformAlpacaOrder: 'PlatformAlpacaOrder',
   AlpacaAccountRestrictionSnapshot: 'AlpacaAccountRestrictionSnapshot',
-  MarketDataAnomaly: 'MarketDataAnomaly'
+  MarketDataAnomaly: 'MarketDataAnomaly',
+  MarketDataHaltEvent: 'MarketDataHaltEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly"
+    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1166,6 +1167,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MarketDataHaltEvent: {
+      payload: Prisma.$MarketDataHaltEventPayload<ExtArgs>
+      fields: Prisma.MarketDataHaltEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MarketDataHaltEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MarketDataHaltEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>
+        }
+        findFirst: {
+          args: Prisma.MarketDataHaltEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MarketDataHaltEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>
+        }
+        findMany: {
+          args: Prisma.MarketDataHaltEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>[]
+        }
+        create: {
+          args: Prisma.MarketDataHaltEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>
+        }
+        createMany: {
+          args: Prisma.MarketDataHaltEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MarketDataHaltEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>[]
+        }
+        delete: {
+          args: Prisma.MarketDataHaltEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>
+        }
+        update: {
+          args: Prisma.MarketDataHaltEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.MarketDataHaltEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MarketDataHaltEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MarketDataHaltEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.MarketDataHaltEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketDataHaltEventPayload>
+        }
+        aggregate: {
+          args: Prisma.MarketDataHaltEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMarketDataHaltEvent>
+        }
+        groupBy: {
+          args: Prisma.MarketDataHaltEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MarketDataHaltEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MarketDataHaltEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MarketDataHaltEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1352,6 +1427,25 @@ export const MarketDataAnomalyScalarFieldEnum = {
 } as const
 
 export type MarketDataAnomalyScalarFieldEnum = (typeof MarketDataAnomalyScalarFieldEnum)[keyof typeof MarketDataAnomalyScalarFieldEnum]
+
+
+export const MarketDataHaltEventScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  symbol: 'symbol',
+  eventAt: 'eventAt',
+  receivedAt: 'receivedAt',
+  statusCode: 'statusCode',
+  statusMessage: 'statusMessage',
+  reasonCode: 'reasonCode',
+  reasonMessage: 'reasonMessage',
+  tape: 'tape',
+  feed: 'feed',
+  correlationId: 'correlationId',
+  createdAt: 'createdAt'
+} as const
+
+export type MarketDataHaltEventScalarFieldEnum = (typeof MarketDataHaltEventScalarFieldEnum)[keyof typeof MarketDataHaltEventScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1556,6 +1650,20 @@ export type ListEnumMarketDataAnomalyTypeFieldRefInput<$PrismaModel> = FieldRefI
 
 
 /**
+ * Reference to a field of type 'MarketDataHaltEventType'
+ */
+export type EnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MarketDataHaltEventType'>
+    
+
+
+/**
+ * Reference to a field of type 'MarketDataHaltEventType[]'
+ */
+export type ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MarketDataHaltEventType[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1729,6 +1837,7 @@ export type GlobalOmitConfig = {
   platformAlpacaOrder?: Prisma.PlatformAlpacaOrderOmit
   alpacaAccountRestrictionSnapshot?: Prisma.AlpacaAccountRestrictionSnapshotOmit
   marketDataAnomaly?: Prisma.MarketDataAnomalyOmit
+  marketDataHaltEvent?: Prisma.MarketDataHaltEventOmit
 }
 
 /* Types for Logging */

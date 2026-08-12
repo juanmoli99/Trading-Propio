@@ -1,4 +1,4 @@
-﻿import { Global, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AlpacaAccountRestrictionGuardService } from './alpaca-account-restriction-guard.service';
 import { AlpacaAccountRestrictionSyncService } from './alpaca-account-restriction-sync.service';
 import { AlpacaAccountService } from './alpaca-account.service';
@@ -9,6 +9,8 @@ import { AlpacaCircuitBreakerService } from './alpaca-circuit-breaker.service';
 import { AlpacaClockService } from './alpaca-clock.service';
 import { AlpacaExternalActivityService } from './alpaca-external-activity.service';
 import { AlpacaFillActivityService } from './alpaca-fill-activity.service';
+import { AlpacaHaltOpenOrderService } from './alpaca-halt-open-order.service';
+import { AlpacaHaltPositionService } from './alpaca-halt-position.service';
 import { AlpacaHttpClient } from './alpaca-http-client.service';
 import { AlpacaOrderOwnershipService } from './alpaca-order-ownership.service';
 import { AlpacaOrderService } from './alpaca-order.service';
@@ -34,6 +36,8 @@ import { AlpacaSubmitOrderService } from './alpaca-submit-order.service';
     AlpacaClockService,
     AlpacaExternalActivityService,
     AlpacaFillActivityService,
+    AlpacaHaltOpenOrderService,
+    AlpacaHaltPositionService,
     AlpacaHttpClient,
     AlpacaOrderOwnershipService,
     AlpacaOrderService,
@@ -57,6 +61,8 @@ import { AlpacaSubmitOrderService } from './alpaca-submit-order.service';
     AlpacaClockService,
     AlpacaExternalActivityService,
     AlpacaFillActivityService,
+    AlpacaHaltOpenOrderService,
+    AlpacaHaltPositionService,
     AlpacaHttpClient,
     AlpacaOrderOwnershipService,
     AlpacaOrderService,

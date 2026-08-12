@@ -1,4 +1,5 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { MarketDataHaltDetectionService } from '../market-data/market-data-halt-detection.service';
 import { AlpacaAccountRestrictionGuardService } from './alpaca-account-restriction-guard.service';
 import { AlpacaHttpClient } from './alpaca-http-client.service';
 import { AlpacaOrderOwnershipService } from './alpaca-order-ownership.service';
@@ -27,12 +28,15 @@ export class AlpacaSubmitOrderService {
     private readonly httpClient: AlpacaHttpClient,
     private readonly ownershipService: AlpacaOrderOwnershipService,
     private readonly accountRestrictionGuard: AlpacaAccountRestrictionGuardService,
+    private readonly haltDetectionService: MarketDataHaltDetectionService,
   ) {}
 
   async submitOrder(request: AlpacaSubmitOrderRequest): Promise<AlpacaOrder> {
     this.assertPaperMode();
 
     const body = this.buildRequestBody(request);
+
+    this.assertSymbolNotHalted(body.symbol);
 
     await this.accountRestrictionGuard.validateOrder(request);
 
@@ -48,6 +52,29 @@ export class AlpacaSubmitOrderService {
     await this.ownershipService.registerPlatformOrder(order);
 
     return order;
+  }
+
+  private assertSymbolNotHalted(symbol: string): void {
+    const halt = this.haltDetectionService.detect(symbol);
+
+    if (halt.state !== 'HALTED') {
+      return;
+    }
+
+    const reasonCode = halt.haltReason?.code.trim() ?? '';
+    const reasonMessage = halt.haltReason?.message.trim() ?? '';
+
+    const reason =
+      reasonCode && reasonMessage
+        ? `${reasonCode} - ${reasonMessage}`
+        : reasonMessage || reasonCode || 'reason not provided by market data feed';
+
+    const haltedAt =
+      halt.haltedAt?.toISOString() ?? 'timestamp unavailable';
+
+    throw new Error(
+      `New Alpaca order blocked because ${halt.symbol} is halted since ${haltedAt}: ${reason}`,
+    );
   }
 
   private buildRequestBody(

@@ -1,9 +1,14 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 import {
   MARKET_DATA_MAX_AGE_DEFAULT_MS,
   MARKET_DATA_MAX_AGE_MAX_MS,
   MARKET_DATA_MAX_AGE_MIN_MS,
 } from './market-data-age.constants';
+import {
+  MARKET_DATA_RESUME_COOLDOWN_DEFAULT_MS,
+  MARKET_DATA_RESUME_COOLDOWN_MAX_MS,
+  MARKET_DATA_RESUME_COOLDOWN_MIN_MS,
+} from './market-data-resume-cooldown.constants';
 
 export const environmentNames = [
   'development',
@@ -49,6 +54,13 @@ const environmentSchema = z
       .min(MARKET_DATA_MAX_AGE_MIN_MS)
       .max(MARKET_DATA_MAX_AGE_MAX_MS)
       .default(MARKET_DATA_MAX_AGE_DEFAULT_MS),
+
+    MARKET_DATA_RESUME_COOLDOWN_MS: z.coerce
+      .number()
+      .int()
+      .min(MARKET_DATA_RESUME_COOLDOWN_MIN_MS)
+      .max(MARKET_DATA_RESUME_COOLDOWN_MAX_MS)
+      .default(MARKET_DATA_RESUME_COOLDOWN_DEFAULT_MS),
 
     DATABASE_URL: z.url(),
     DIRECT_URL: z.url(),

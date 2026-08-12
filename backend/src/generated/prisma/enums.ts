@@ -52,3 +52,11 @@ export const AuditOutcome = {
 } as const
 
 export type AuditOutcome = (typeof AuditOutcome)[keyof typeof AuditOutcome]
+
+
+export const MarketDataHaltEventType = {
+  HALT: 'HALT',
+  RESUME: 'RESUME'
+} as const
+
+export type MarketDataHaltEventType = (typeof MarketDataHaltEventType)[keyof typeof MarketDataHaltEventType]

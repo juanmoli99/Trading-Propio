@@ -67,3 +67,8 @@ export type AlpacaAccountRestrictionSnapshot = Prisma.AlpacaAccountRestrictionSn
  * 
  */
 export type MarketDataAnomaly = Prisma.MarketDataAnomalyModel
+/**
+ * Model MarketDataHaltEvent
+ * 
+ */
+export type MarketDataHaltEvent = Prisma.MarketDataHaltEventModel
