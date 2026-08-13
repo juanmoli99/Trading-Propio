@@ -339,3 +339,53 @@ model SymbolTemporaryBlock {
   @@index([expiresAt])
   @@index([createdAt])
 }
+
+enum MarketEventPolicyEventKind {
+  EARNINGS
+  CORPORATE_ACTION
+}
+
+enum MarketEventPolicyAppliedAction {
+  ALLOW
+  BLOCK_ENTRY
+  REDUCE_POSITION_SIZE
+  PROHIBIT_OVERNIGHT
+}
+
+model StrategyMarketEventPolicyHistory {
+  id String @id @default(cuid())
+
+  strategyId String
+  symbol     String
+
+  eventKind           MarketEventPolicyEventKind
+  eventDate           DateTime
+  eventSourceId       String?
+  corporateActionType String?
+
+  evaluatedAt DateTime
+
+  calendarDaysToEvent Int
+
+  matchedRuleId String?
+  action        MarketEventPolicyAppliedAction
+
+  positionSizeMultiplier Decimal @db.Decimal(10, 8)
+
+  entryAllowed     Boolean
+  overnightAllowed Boolean
+
+  reason String
+
+  createdAt DateTime @default(now())
+
+  @@index([strategyId])
+  @@index([symbol])
+  @@index([eventKind])
+  @@index([eventDate])
+  @@index([evaluatedAt])
+  @@index([action])
+  @@index([matchedRuleId])
+  @@index([strategyId, evaluatedAt])
+  @@index([symbol, evaluatedAt])
+}

@@ -102,11 +102,61 @@ const environmentSchema = z
       .max(300000)
       .default(30000),
 
+    EARNINGS_BLACKOUT_BEFORE_DAYS: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .max(365)
+      .default(1),
+
+    EARNINGS_BLACKOUT_AFTER_DAYS: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .max(365)
+      .default(1),
+
+    EARNINGS_POSITION_SIZE_REDUCTION_ENABLED: z
+      .enum(['true', 'false'])
+      .default('false'),
+
+    EARNINGS_POSITION_SIZE_REDUCTION_DAYS: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(365)
+      .default(3),
+
+    EARNINGS_POSITION_SIZE_MULTIPLIER: z.coerce
+      .number()
+      .positive()
+      .max(1)
+      .finite()
+      .default(0.5),
+
+    EARNINGS_OVERNIGHT_PROHIBITION_ENABLED: z
+      .enum(['true', 'false'])
+      .default('false'),
+
+    EARNINGS_OVERNIGHT_PROHIBITION_DAYS: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(365)
+      .default(1),
+
+    FINNHUB_API_KEY: z.string().min(1),
+    FINNHUB_BASE_URL: z.url().default('https://finnhub.io/api/v1'),
+    FINNHUB_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .min(100)
+      .max(120000)
+      .default(10000),
+
     ALPACA_PAPER_API_KEY: z.string().min(1).optional(),
     ALPACA_PAPER_API_SECRET: z.string().min(1).optional(),
-    ALPACA_PAPER_BASE_URL: z
-      .url()
-      .default('https://paper-api.alpaca.markets'),
+    ALPACA_PAPER_BASE_URL: z.url().default('https://paper-api.alpaca.markets'),
 
     ALPACA_LIVE_API_KEY: z.string().min(1).optional(),
     ALPACA_LIVE_API_SECRET: z.string().min(1).optional(),

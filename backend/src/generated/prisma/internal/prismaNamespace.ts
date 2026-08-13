@@ -414,7 +414,8 @@ export const ModelName = {
   TradingSymbol: 'TradingSymbol',
   SymbolWhitelistEntry: 'SymbolWhitelistEntry',
   SymbolBlacklistEntry: 'SymbolBlacklistEntry',
-  SymbolTemporaryBlock: 'SymbolTemporaryBlock'
+  SymbolTemporaryBlock: 'SymbolTemporaryBlock',
+  StrategyMarketEventPolicyHistory: 'StrategyMarketEventPolicyHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -430,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory" | "tradingSymbol" | "symbolWhitelistEntry" | "symbolBlacklistEntry" | "symbolTemporaryBlock"
+    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory" | "tradingSymbol" | "symbolWhitelistEntry" | "symbolBlacklistEntry" | "symbolTemporaryBlock" | "strategyMarketEventPolicyHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1766,6 +1767,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StrategyMarketEventPolicyHistory: {
+      payload: Prisma.$StrategyMarketEventPolicyHistoryPayload<ExtArgs>
+      fields: Prisma.StrategyMarketEventPolicyHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StrategyMarketEventPolicyHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StrategyMarketEventPolicyHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.StrategyMarketEventPolicyHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StrategyMarketEventPolicyHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.StrategyMarketEventPolicyHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.StrategyMarketEventPolicyHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.StrategyMarketEventPolicyHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StrategyMarketEventPolicyHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.StrategyMarketEventPolicyHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>
+        }
+        update: {
+          args: Prisma.StrategyMarketEventPolicyHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.StrategyMarketEventPolicyHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StrategyMarketEventPolicyHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StrategyMarketEventPolicyHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.StrategyMarketEventPolicyHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyMarketEventPolicyHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.StrategyMarketEventPolicyHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStrategyMarketEventPolicyHistory>
+        }
+        groupBy: {
+          args: Prisma.StrategyMarketEventPolicyHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategyMarketEventPolicyHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StrategyMarketEventPolicyHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategyMarketEventPolicyHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2068,6 +2143,28 @@ export const SymbolTemporaryBlockScalarFieldEnum = {
 export type SymbolTemporaryBlockScalarFieldEnum = (typeof SymbolTemporaryBlockScalarFieldEnum)[keyof typeof SymbolTemporaryBlockScalarFieldEnum]
 
 
+export const StrategyMarketEventPolicyHistoryScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  symbol: 'symbol',
+  eventKind: 'eventKind',
+  eventDate: 'eventDate',
+  eventSourceId: 'eventSourceId',
+  corporateActionType: 'corporateActionType',
+  evaluatedAt: 'evaluatedAt',
+  calendarDaysToEvent: 'calendarDaysToEvent',
+  matchedRuleId: 'matchedRuleId',
+  action: 'action',
+  positionSizeMultiplier: 'positionSizeMultiplier',
+  entryAllowed: 'entryAllowed',
+  overnightAllowed: 'overnightAllowed',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type StrategyMarketEventPolicyHistoryScalarFieldEnum = (typeof StrategyMarketEventPolicyHistoryScalarFieldEnum)[keyof typeof StrategyMarketEventPolicyHistoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2284,6 +2381,34 @@ export type ListEnumMarketDataHaltEventTypeFieldRefInput<$PrismaModel> = FieldRe
 
 
 /**
+ * Reference to a field of type 'MarketEventPolicyEventKind'
+ */
+export type EnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MarketEventPolicyEventKind'>
+    
+
+
+/**
+ * Reference to a field of type 'MarketEventPolicyEventKind[]'
+ */
+export type ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MarketEventPolicyEventKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MarketEventPolicyAppliedAction'
+ */
+export type EnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MarketEventPolicyAppliedAction'>
+    
+
+
+/**
+ * Reference to a field of type 'MarketEventPolicyAppliedAction[]'
+ */
+export type ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MarketEventPolicyAppliedAction[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -2465,6 +2590,7 @@ export type GlobalOmitConfig = {
   symbolWhitelistEntry?: Prisma.SymbolWhitelistEntryOmit
   symbolBlacklistEntry?: Prisma.SymbolBlacklistEntryOmit
   symbolTemporaryBlock?: Prisma.SymbolTemporaryBlockOmit
+  strategyMarketEventPolicyHistory?: Prisma.StrategyMarketEventPolicyHistoryOmit
 }
 
 /* Types for Logging */

@@ -22,6 +22,7 @@ import { CorporateActionSplitService } from './corporate-action-split.service';
 import { CorporateActionWatchlistUpdateService } from './corporate-action-watchlist-update.service';
 import { CorporateActionWorthlessRemovalService } from './corporate-action-worthless-removal.service';
 import { CorporateActionsService } from './corporate-actions.service';
+import { DividendRelevantDatesService } from './dividend-relevant-dates.service';
 
 @Module({
   providers: [
@@ -47,6 +48,7 @@ import { CorporateActionsService } from './corporate-actions.service';
     CorporateActionWatchlistUpdateService,
     CorporateActionWorthlessRemovalService,
     CorporateActionsService,
+    DividendRelevantDatesService,
   ],
   exports: [
     CorporateActionCashDividendService,
@@ -71,6 +73,7 @@ import { CorporateActionsService } from './corporate-actions.service';
     CorporateActionWatchlistUpdateService,
     CorporateActionWorthlessRemovalService,
     CorporateActionsService,
+    DividendRelevantDatesService,
   ],
 })
 export class CorporateActionsModule {}

@@ -60,3 +60,21 @@ export const MarketDataHaltEventType = {
 } as const
 
 export type MarketDataHaltEventType = (typeof MarketDataHaltEventType)[keyof typeof MarketDataHaltEventType]
+
+
+export const MarketEventPolicyEventKind = {
+  EARNINGS: 'EARNINGS',
+  CORPORATE_ACTION: 'CORPORATE_ACTION'
+} as const
+
+export type MarketEventPolicyEventKind = (typeof MarketEventPolicyEventKind)[keyof typeof MarketEventPolicyEventKind]
+
+
+export const MarketEventPolicyAppliedAction = {
+  ALLOW: 'ALLOW',
+  BLOCK_ENTRY: 'BLOCK_ENTRY',
+  REDUCE_POSITION_SIZE: 'REDUCE_POSITION_SIZE',
+  PROHIBIT_OVERNIGHT: 'PROHIBIT_OVERNIGHT'
+} as const
+
+export type MarketEventPolicyAppliedAction = (typeof MarketEventPolicyAppliedAction)[keyof typeof MarketEventPolicyAppliedAction]

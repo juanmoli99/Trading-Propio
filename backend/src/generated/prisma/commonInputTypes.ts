@@ -419,6 +419,40 @@ export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
 }
 
+export type EnumMarketEventPolicyEventKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyEventKind | Prisma.EnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel> | $Enums.MarketEventPolicyEventKind
+}
+
+export type EnumMarketEventPolicyAppliedActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyAppliedAction | Prisma.EnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel> | $Enums.MarketEventPolicyAppliedAction
+}
+
+export type EnumMarketEventPolicyEventKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyEventKind | Prisma.EnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyEventKindWithAggregatesFilter<$PrismaModel> | $Enums.MarketEventPolicyEventKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel>
+}
+
+export type EnumMarketEventPolicyAppliedActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyAppliedAction | Prisma.EnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyAppliedActionWithAggregatesFilter<$PrismaModel> | $Enums.MarketEventPolicyAppliedAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -781,6 +815,40 @@ export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
   _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyEventKind | Prisma.EnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel> | $Enums.MarketEventPolicyEventKind
+}
+
+export type NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyAppliedAction | Prisma.EnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel> | $Enums.MarketEventPolicyAppliedAction
+}
+
+export type NestedEnumMarketEventPolicyEventKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyEventKind | Prisma.EnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyEventKind[] | Prisma.ListEnumMarketEventPolicyEventKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyEventKindWithAggregatesFilter<$PrismaModel> | $Enums.MarketEventPolicyEventKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMarketEventPolicyEventKindFilter<$PrismaModel>
+}
+
+export type NestedEnumMarketEventPolicyAppliedActionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MarketEventPolicyAppliedAction | Prisma.EnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  in?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MarketEventPolicyAppliedAction[] | Prisma.ListEnumMarketEventPolicyAppliedActionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMarketEventPolicyAppliedActionWithAggregatesFilter<$PrismaModel> | $Enums.MarketEventPolicyAppliedAction
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMarketEventPolicyAppliedActionFilter<$PrismaModel>
 }
 
 

@@ -107,3 +107,8 @@ export type SymbolBlacklistEntry = Prisma.SymbolBlacklistEntryModel
  * 
  */
 export type SymbolTemporaryBlock = Prisma.SymbolTemporaryBlockModel
+/**
+ * Model StrategyMarketEventPolicyHistory
+ * 
+ */
+export type StrategyMarketEventPolicyHistory = Prisma.StrategyMarketEventPolicyHistoryModel

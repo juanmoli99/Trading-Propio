@@ -68,7 +68,8 @@ export const ModelName = {
   TradingSymbol: 'TradingSymbol',
   SymbolWhitelistEntry: 'SymbolWhitelistEntry',
   SymbolBlacklistEntry: 'SymbolBlacklistEntry',
-  SymbolTemporaryBlock: 'SymbolTemporaryBlock'
+  SymbolTemporaryBlock: 'SymbolTemporaryBlock',
+  StrategyMarketEventPolicyHistory: 'StrategyMarketEventPolicyHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -348,6 +349,28 @@ export const SymbolTemporaryBlockScalarFieldEnum = {
 } as const
 
 export type SymbolTemporaryBlockScalarFieldEnum = (typeof SymbolTemporaryBlockScalarFieldEnum)[keyof typeof SymbolTemporaryBlockScalarFieldEnum]
+
+
+export const StrategyMarketEventPolicyHistoryScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  symbol: 'symbol',
+  eventKind: 'eventKind',
+  eventDate: 'eventDate',
+  eventSourceId: 'eventSourceId',
+  corporateActionType: 'corporateActionType',
+  evaluatedAt: 'evaluatedAt',
+  calendarDaysToEvent: 'calendarDaysToEvent',
+  matchedRuleId: 'matchedRuleId',
+  action: 'action',
+  positionSizeMultiplier: 'positionSizeMultiplier',
+  entryAllowed: 'entryAllowed',
+  overnightAllowed: 'overnightAllowed',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type StrategyMarketEventPolicyHistoryScalarFieldEnum = (typeof StrategyMarketEventPolicyHistoryScalarFieldEnum)[keyof typeof StrategyMarketEventPolicyHistoryScalarFieldEnum]
 
 
 export const SortOrder = {

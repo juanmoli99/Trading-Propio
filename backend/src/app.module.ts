@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+﻿import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AlpacaModule } from './alpaca/alpaca.module';
@@ -24,6 +24,7 @@ import { PrismaModule } from './database/prisma.module';
 import { HealthModule } from './health/health.module';
 import { IndicatorsModule } from './indicators/indicators.module';
 import { MarketDataModule } from './market-data/market-data.module';
+import { MarketEventsModule } from './market-events/market-events.module';
 import { RegulatoryRulesModule } from './regulatory/regulatory-rules.module';
 import { SymbolsModule } from './symbols/symbols.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
@@ -37,6 +38,7 @@ import { WatchlistModule } from './watchlist/watchlist.module';
     WatchlistModule,
     AlpacaModule,
     MarketDataModule,
+    MarketEventsModule,
     IndicatorsModule,
     CorporateActionsModule,
     CorrelationModule,
