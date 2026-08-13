@@ -62,6 +62,24 @@ export class MarketDataCacheService {
     return this.entries.delete(this.normalizeKey(key));
   }
 
+  deleteByPrefix(prefix: string): number {
+    const normalizedPrefix = this.normalizeKey(prefix);
+
+    let deleted = 0;
+
+    for (const key of this.entries.keys()) {
+      if (!key.startsWith(normalizedPrefix)) {
+        continue;
+      }
+
+      if (this.entries.delete(key)) {
+        deleted += 1;
+      }
+    }
+
+    return deleted;
+  }
+
   clear(): void {
     this.entries.clear();
   }

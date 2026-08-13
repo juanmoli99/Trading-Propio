@@ -228,3 +228,44 @@ model MarketDataHaltEvent {
   @@index([correlationId])
   @@index([symbol, eventAt])
 }
+
+model WatchlistSymbol {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model StrategySymbolAssociation {
+  id         String   @id @default(cuid())
+  strategyId String
+  symbol     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([strategyId, symbol])
+  @@index([strategyId])
+  @@index([symbol])
+  @@index([createdAt])
+}
+
+model CorporateActionAdjustmentHistory {
+  id                  String   @id @default(cuid())
+  corporateActionId   String
+  corporateActionType String
+  symbol              String?
+  processDate         DateTime
+  adjustmentType      String
+  status              String
+  details             Json
+  recordedAt          DateTime @default(now())
+
+  @@index([corporateActionId])
+  @@index([corporateActionType])
+  @@index([symbol])
+  @@index([processDate])
+  @@index([adjustmentType])
+  @@index([recordedAt])
+}

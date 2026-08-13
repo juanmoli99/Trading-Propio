@@ -10,6 +10,7 @@ import { ReauthenticationGuard } from './auth/reauthentication.guard';
 import { SessionAuthGuard } from './auth/session-auth.guard';
 import { AuditModule } from './common/audit/audit.module';
 import { CorrelationModule } from './common/correlation/correlation.module';
+import { CorporateActionsModule } from './corporate-actions/corporate-actions.module';
 import { CorrelationIdMiddleware } from './common/correlation/correlation-id.middleware';
 import { SanitizedLogger } from './common/logging/sanitized-logger.service';
 import { OperationalStateModule } from './common/operational-state/operational-state.module';
@@ -31,6 +32,7 @@ import { RegulatoryRulesModule } from './regulatory/regulatory-rules.module';
     RegulatoryRulesModule,
     AlpacaModule,
     MarketDataModule,
+    CorporateActionsModule,
     CorrelationModule,
     AuditModule,
     HardCapsModule,

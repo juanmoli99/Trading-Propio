@@ -407,7 +407,10 @@ export const ModelName = {
   PlatformAlpacaOrder: 'PlatformAlpacaOrder',
   AlpacaAccountRestrictionSnapshot: 'AlpacaAccountRestrictionSnapshot',
   MarketDataAnomaly: 'MarketDataAnomaly',
-  MarketDataHaltEvent: 'MarketDataHaltEvent'
+  MarketDataHaltEvent: 'MarketDataHaltEvent',
+  WatchlistSymbol: 'WatchlistSymbol',
+  StrategySymbolAssociation: 'StrategySymbolAssociation',
+  CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -423,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent"
+    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1241,6 +1244,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WatchlistSymbol: {
+      payload: Prisma.$WatchlistSymbolPayload<ExtArgs>
+      fields: Prisma.WatchlistSymbolFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WatchlistSymbolFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WatchlistSymbolFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>
+        }
+        findFirst: {
+          args: Prisma.WatchlistSymbolFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WatchlistSymbolFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>
+        }
+        findMany: {
+          args: Prisma.WatchlistSymbolFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>[]
+        }
+        create: {
+          args: Prisma.WatchlistSymbolCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>
+        }
+        createMany: {
+          args: Prisma.WatchlistSymbolCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WatchlistSymbolCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>[]
+        }
+        delete: {
+          args: Prisma.WatchlistSymbolDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>
+        }
+        update: {
+          args: Prisma.WatchlistSymbolUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>
+        }
+        deleteMany: {
+          args: Prisma.WatchlistSymbolDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WatchlistSymbolUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WatchlistSymbolUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>[]
+        }
+        upsert: {
+          args: Prisma.WatchlistSymbolUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WatchlistSymbolPayload>
+        }
+        aggregate: {
+          args: Prisma.WatchlistSymbolAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWatchlistSymbol>
+        }
+        groupBy: {
+          args: Prisma.WatchlistSymbolGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WatchlistSymbolGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WatchlistSymbolCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WatchlistSymbolCountAggregateOutputType> | number
+        }
+      }
+    }
+    StrategySymbolAssociation: {
+      payload: Prisma.$StrategySymbolAssociationPayload<ExtArgs>
+      fields: Prisma.StrategySymbolAssociationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StrategySymbolAssociationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StrategySymbolAssociationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>
+        }
+        findFirst: {
+          args: Prisma.StrategySymbolAssociationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StrategySymbolAssociationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>
+        }
+        findMany: {
+          args: Prisma.StrategySymbolAssociationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>[]
+        }
+        create: {
+          args: Prisma.StrategySymbolAssociationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>
+        }
+        createMany: {
+          args: Prisma.StrategySymbolAssociationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StrategySymbolAssociationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>[]
+        }
+        delete: {
+          args: Prisma.StrategySymbolAssociationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>
+        }
+        update: {
+          args: Prisma.StrategySymbolAssociationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>
+        }
+        deleteMany: {
+          args: Prisma.StrategySymbolAssociationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StrategySymbolAssociationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StrategySymbolAssociationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>[]
+        }
+        upsert: {
+          args: Prisma.StrategySymbolAssociationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolAssociationPayload>
+        }
+        aggregate: {
+          args: Prisma.StrategySymbolAssociationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStrategySymbolAssociation>
+        }
+        groupBy: {
+          args: Prisma.StrategySymbolAssociationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategySymbolAssociationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StrategySymbolAssociationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategySymbolAssociationCountAggregateOutputType> | number
+        }
+      }
+    }
+    CorporateActionAdjustmentHistory: {
+      payload: Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>
+      fields: Prisma.CorporateActionAdjustmentHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CorporateActionAdjustmentHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CorporateActionAdjustmentHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.CorporateActionAdjustmentHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CorporateActionAdjustmentHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.CorporateActionAdjustmentHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.CorporateActionAdjustmentHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.CorporateActionAdjustmentHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CorporateActionAdjustmentHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.CorporateActionAdjustmentHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+        }
+        update: {
+          args: Prisma.CorporateActionAdjustmentHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.CorporateActionAdjustmentHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CorporateActionAdjustmentHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CorporateActionAdjustmentHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.CorporateActionAdjustmentHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.CorporateActionAdjustmentHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCorporateActionAdjustmentHistory>
+        }
+        groupBy: {
+          args: Prisma.CorporateActionAdjustmentHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CorporateActionAdjustmentHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CorporateActionAdjustmentHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CorporateActionAdjustmentHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1446,6 +1671,42 @@ export const MarketDataHaltEventScalarFieldEnum = {
 } as const
 
 export type MarketDataHaltEventScalarFieldEnum = (typeof MarketDataHaltEventScalarFieldEnum)[keyof typeof MarketDataHaltEventScalarFieldEnum]
+
+
+export const WatchlistSymbolScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WatchlistSymbolScalarFieldEnum = (typeof WatchlistSymbolScalarFieldEnum)[keyof typeof WatchlistSymbolScalarFieldEnum]
+
+
+export const StrategySymbolAssociationScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StrategySymbolAssociationScalarFieldEnum = (typeof StrategySymbolAssociationScalarFieldEnum)[keyof typeof StrategySymbolAssociationScalarFieldEnum]
+
+
+export const CorporateActionAdjustmentHistoryScalarFieldEnum = {
+  id: 'id',
+  corporateActionId: 'corporateActionId',
+  corporateActionType: 'corporateActionType',
+  symbol: 'symbol',
+  processDate: 'processDate',
+  adjustmentType: 'adjustmentType',
+  status: 'status',
+  details: 'details',
+  recordedAt: 'recordedAt'
+} as const
+
+export type CorporateActionAdjustmentHistoryScalarFieldEnum = (typeof CorporateActionAdjustmentHistoryScalarFieldEnum)[keyof typeof CorporateActionAdjustmentHistoryScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1838,6 +2099,9 @@ export type GlobalOmitConfig = {
   alpacaAccountRestrictionSnapshot?: Prisma.AlpacaAccountRestrictionSnapshotOmit
   marketDataAnomaly?: Prisma.MarketDataAnomalyOmit
   marketDataHaltEvent?: Prisma.MarketDataHaltEventOmit
+  watchlistSymbol?: Prisma.WatchlistSymbolOmit
+  strategySymbolAssociation?: Prisma.StrategySymbolAssociationOmit
+  corporateActionAdjustmentHistory?: Prisma.CorporateActionAdjustmentHistoryOmit
 }
 
 /* Types for Logging */

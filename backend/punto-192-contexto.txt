@@ -1,0 +1,2072 @@
+===== PUNTO 192 =====
+
+===== .\prisma\schema.prisma =====
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum MarketDataAnomalyType {
+  FUTURE_BAR
+  MISSING_BAR_GAP
+  OUTSIDE_SESSION
+  PRICE_SANITY
+  TOO_OLD_DATA
+}
+
+enum AlpacaMarginClassification {
+  LIMITED_MARGIN_1X
+  REG_T_MARGIN_2X
+  INTRADAY_MARGIN_4X
+}
+
+model SystemMetadata {
+  id        String                   @id @default(cuid())
+  key       String                   @unique
+  value     String
+  status    RecordStatus             @default(ACTIVE)
+  version   Int                      @default(0)
+  createdAt DateTime                 @default(now())
+  updatedAt DateTime                 @updatedAt
+  revisions SystemMetadataRevision[]
+}
+
+model SystemMetadataRevision {
+  id               String   @id @default(cuid())
+  systemMetadataId String
+  value            String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  systemMetadata SystemMetadata @relation(fields: [systemMetadataId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([systemMetadataId, createdAt])
+  @@index([systemMetadataId])
+  @@index([createdAt])
+}
+
+model FinancialConstraintProbe {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(20, 8)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PersistentLock {
+  id         String   @id
+  key        String   @unique
+  ownerId    String
+  acquiredAt DateTime @default(now())
+  expiresAt  DateTime
+  updatedAt  DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([ownerId])
+}
+
+model SingleOperator {
+  id                       String        @id
+  username                 String        @unique
+  displayName              String
+  passwordHash             String?
+  enabled                  Boolean       @default(true)
+  failedLoginAttempts      Int           @default(0)
+  failedLoginWindowStartAt DateTime?
+  lastFailedLoginAt        DateTime?
+  loginLockedUntil         DateTime?
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+  sessions                 AuthSession[]
+  auditEvents              AuditEvent[]
+}
+
+model AuthSession {
+  id                   String    @id @default(cuid())
+  operatorId           String
+  tokenHash            String    @unique
+  csrfTokenHash        String
+  expiresAt            DateTime
+  reauthenticatedUntil DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  operator SingleOperator @relation(fields: [operatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([operatorId])
+  @@index([expiresAt])
+}
+
+enum AuditAction {
+  REAUTHENTICATION
+  REVOKE_ALL_SESSIONS
+}
+
+enum AuditOutcome {
+  SUCCESS
+  FAILURE
+}
+
+model AuditEvent {
+  id            String       @id @default(cuid())
+  operatorId    String
+  action        AuditAction
+  outcome       AuditOutcome
+  correlationId String?
+  metadata      Json?
+  createdAt     DateTime     @default(now())
+
+  operator SingleOperator @relation(fields: [operatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([operatorId])
+  @@index([action])
+  @@index([outcome])
+  @@index([createdAt])
+  @@index([correlationId])
+}
+
+model PlatformAlpacaOrder {
+  id            String   @id @default(cuid())
+  alpacaOrderId String   @unique
+  clientOrderId String   @unique
+  symbol        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([symbol])
+  @@index([createdAt])
+}
+
+model AlpacaAccountRestrictionSnapshot {
+  id                   String                     @id @default(cuid())
+  alpacaAccountId      String                     @unique
+  accountStatus        String
+  marginClassification AlpacaMarginClassification
+  multiplier           Int
+
+  tradingBlocked       Boolean
+  accountBlocked       Boolean
+  transfersBlocked     Boolean
+  tradeSuspendedByUser Boolean
+  shortingDisabled     Boolean
+  leverageDisabled     Boolean
+
+  tradingAllowed   Boolean
+  transfersAllowed Boolean
+  shortingAllowed  Boolean
+  leverageAllowed  Boolean
+
+  buyingPower              Decimal @db.Decimal(20, 8)
+  regtBuyingPower          Decimal @db.Decimal(20, 8)
+  nonMarginableBuyingPower Decimal @db.Decimal(20, 8)
+
+  initialMargin         Decimal @db.Decimal(20, 8)
+  maintenanceMargin     Decimal @db.Decimal(20, 8)
+  lastMaintenanceMargin Decimal @db.Decimal(20, 8)
+  sma                   Decimal @db.Decimal(20, 8)
+
+  syncedAt  DateTime
+  version   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([accountStatus])
+  @@index([marginClassification])
+  @@index([tradingAllowed])
+  @@index([syncedAt])
+}
+
+model MarketDataAnomaly {
+  id            String                @id @default(cuid())
+  type          MarketDataAnomalyType
+  symbol        String?
+  timestamp     DateTime?
+  referenceAt   DateTime?
+  details       Json
+  correlationId String?
+  detectedAt    DateTime              @default(now())
+  createdAt     DateTime              @default(now())
+
+  @@index([type])
+  @@index([symbol])
+  @@index([timestamp])
+  @@index([detectedAt])
+  @@index([correlationId])
+}
+
+enum MarketDataHaltEventType {
+  HALT
+  RESUME
+}
+
+model MarketDataHaltEvent {
+  id            String                  @id @default(cuid())
+  type          MarketDataHaltEventType
+  symbol        String
+  eventAt       DateTime
+  receivedAt    DateTime
+  statusCode    String
+  statusMessage String
+  reasonCode    String
+  reasonMessage String
+  tape          String
+  feed          String
+  correlationId String?
+  createdAt     DateTime                @default(now())
+
+  @@index([type])
+  @@index([symbol])
+  @@index([eventAt])
+  @@index([createdAt])
+  @@index([correlationId])
+  @@index([symbol, eventAt])
+}
+
+model WatchlistSymbol {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model StrategySymbolAssociation {
+  id         String   @id @default(cuid())
+  strategyId String
+  symbol     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([strategyId, symbol])
+  @@index([strategyId])
+  @@index([symbol])
+  @@index([createdAt])
+}
+
+model CorporateActionAdjustmentHistory {
+  id                  String   @id @default(cuid())
+  corporateActionId   String
+  corporateActionType String
+  symbol              String?
+  processDate         DateTime
+  adjustmentType      String
+  status              String
+  details             Json
+  recordedAt          DateTime @default(now())
+
+  @@index([corporateActionId])
+  @@index([corporateActionType])
+  @@index([symbol])
+  @@index([processDate])
+  @@index([adjustmentType])
+  @@index([recordedAt])
+}
+
+
+===== .\src\corporate-actions\corporate-action-adjustment-history.service.ts =====
+import { Injectable } from '@nestjs/common';
+import type { Prisma } from '../generated/prisma/client';
+import { PrismaService } from '../database/prisma.service';
+import type {
+  CorporateActionAdjustmentHistoryRecord,
+  CorporateActionAdjustmentType,
+  RecordCorporateActionAdjustmentInput,
+} from './corporate-action-adjustment-history.types';
+import { CORPORATE_ACTION_ADJUSTMENT_TYPES } from './corporate-action-adjustment-history.types';
+import type { CorporateActionType } from './corporate-actions.types';
+
+@Injectable()
+export class CorporateActionAdjustmentHistoryService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async record(
+    input: RecordCorporateActionAdjustmentInput,
+  ): Promise<CorporateActionAdjustmentHistoryRecord> {
+    const corporateActionId = this.normalizeRequiredText(
+      input.corporateActionId,
+      'corporate action ID',
+    );
+
+    const corporateActionType = this.normalizeRequiredText(
+      input.corporateActionType,
+      'corporate action type',
+    ) as CorporateActionType;
+
+    const symbol =
+      input.symbol === null ? null : this.normalizeSymbol(input.symbol);
+
+    const processDate = this.cloneValidDate(input.processDate, 'process date');
+
+    const adjustmentType = this.normalizeAdjustmentType(input.adjustmentType);
+
+    const status = this.normalizeRequiredText(input.status, 'status');
+
+    const details = this.cloneDetails(input.details);
+
+    const created = await this.prisma.corporateActionAdjustmentHistory.create({
+      data: {
+        corporateActionId,
+        corporateActionType,
+        symbol,
+        processDate,
+        adjustmentType,
+        status,
+        details: details as Prisma.InputJsonValue,
+      },
+    });
+
+    return {
+      id: created.id,
+      corporateActionId: created.corporateActionId,
+      corporateActionType: created.corporateActionType as CorporateActionType,
+      symbol: created.symbol,
+      processDate: new Date(created.processDate),
+      adjustmentType: created.adjustmentType as CorporateActionAdjustmentType,
+      status: created.status,
+      details: structuredClone(created.details as Record<string, unknown>),
+      recordedAt: new Date(created.recordedAt),
+    };
+  }
+
+  private normalizeAdjustmentType(
+    value: CorporateActionAdjustmentType,
+  ): CorporateActionAdjustmentType {
+    if (!CORPORATE_ACTION_ADJUSTMENT_TYPES.includes(value)) {
+      throw new Error('Invalid corporate action adjustment history type');
+    }
+
+    return value;
+  }
+
+  private normalizeRequiredText(value: string, field: string): string {
+    const normalized = value.trim();
+
+    if (!normalized) {
+      throw new Error(`Invalid corporate action adjustment history ${field}`);
+    }
+
+    return normalized;
+  }
+
+  private normalizeSymbol(value: string): string {
+    const normalized = value.trim().toUpperCase();
+
+    if (!normalized || normalized.length > 32 || /\s/.test(normalized)) {
+      throw new Error('Invalid corporate action adjustment history symbol');
+    }
+
+    return normalized;
+  }
+
+  private cloneValidDate(value: Date, field: string): Date {
+    const cloned = new Date(value.getTime());
+
+    if (!Number.isFinite(cloned.getTime())) {
+      throw new Error(`Invalid corporate action adjustment history ${field}`);
+    }
+
+    return cloned;
+  }
+
+  private cloneDetails(
+    value: Readonly<Record<string, unknown>>,
+  ): Record<string, unknown> {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      throw new Error('Invalid corporate action adjustment history details');
+    }
+
+    return structuredClone(value);
+  }
+}
+
+
+===== .\src\corporate-actions\corporate-action-adjustment-history.types.ts =====
+import type { CorporateActionType } from './corporate-actions.types';
+
+export const CORPORATE_ACTION_ADJUSTMENT_TYPES = [
+  'SYMBOL_UPDATE',
+  'WATCHLIST_UPDATE',
+  'STRATEGY_SYMBOL_UPDATE',
+  'MARKET_DATA_CACHE_INVALIDATION',
+  'POST_EVENT_RECONCILIATION',
+] as const;
+
+export type CorporateActionAdjustmentType =
+  (typeof CORPORATE_ACTION_ADJUSTMENT_TYPES)[number];
+
+export interface RecordCorporateActionAdjustmentInput {
+  readonly corporateActionId: string;
+  readonly corporateActionType: CorporateActionType;
+  readonly symbol: string | null;
+  readonly processDate: Date;
+  readonly adjustmentType: CorporateActionAdjustmentType;
+  readonly status: string;
+  readonly details: Readonly<Record<string, unknown>>;
+}
+
+export interface CorporateActionAdjustmentHistoryRecord {
+  readonly id: string;
+  readonly corporateActionId: string;
+  readonly corporateActionType: CorporateActionType;
+  readonly symbol: string | null;
+  readonly processDate: Date;
+  readonly adjustmentType: CorporateActionAdjustmentType;
+  readonly status: string;
+  readonly details: Readonly<Record<string, unknown>>;
+  readonly recordedAt: Date;
+}
+
+
+===== .\src\corporate-actions\corporate-action-post-event-reconciliation.service.ts =====
+import { Injectable } from '@nestjs/common';
+import { CorporateActionCostBasisReconciliationService } from './corporate-action-cost-basis-reconciliation.service';
+import type { CorporateActionCostBasisReconciliationItem } from './corporate-action-cost-basis-reconciliation.types';
+import { CorporateActionQuantityReconciliationService } from './corporate-action-quantity-reconciliation.service';
+import type { CorporateActionQuantityReconciliationItem } from './corporate-action-quantity-reconciliation.types';
+import type {
+  CorporateActionPostEventReconciliationItem,
+  CorporateActionPostEventReconciliationQuery,
+  CorporateActionPostEventReconciliationResult,
+  CorporateActionPostEventReconciliationStatus,
+} from './corporate-action-post-event-reconciliation.types';
+
+@Injectable()
+export class CorporateActionPostEventReconciliationService {
+  constructor(
+    private readonly quantityReconciliationService: CorporateActionQuantityReconciliationService,
+    private readonly costBasisReconciliationService: CorporateActionCostBasisReconciliationService,
+  ) {}
+
+  async reconcilePostEvent(
+    query: CorporateActionPostEventReconciliationQuery = {},
+  ): Promise<CorporateActionPostEventReconciliationResult> {
+    const [quantityResult, costBasisResult] = await Promise.all([
+      this.quantityReconciliationService.reconcileQuantity(query),
+      this.costBasisReconciliationService.reconcileCostBasis(query),
+    ]);
+
+    this.assertSameReferenceDate(quantityResult.asOf, costBasisResult.asOf);
+
+    const quantityById = this.indexQuantityItems(quantityResult.items);
+
+    const costBasisById = this.indexCostBasisItems(costBasisResult.items);
+
+    const actionIds = new Set<string>([
+      ...quantityById.keys(),
+      ...costBasisById.keys(),
+    ]);
+
+    const items: CorporateActionPostEventReconciliationItem[] = [];
+
+    for (const actionId of actionIds) {
+      const quantity = quantityById.get(actionId);
+      const costBasis = costBasisById.get(actionId);
+
+      if (!quantity || !costBasis) {
+        throw new Error(
+          `Incomplete post-event reconciliation data for corporate action ${actionId}`,
+        );
+      }
+
+      this.assertSameCorporateAction(quantity, costBasis);
+
+      items.push(this.buildItem(quantity, costBasis));
+    }
+
+    const matchedCount = this.countStatus(items, 'MATCHED');
+
+    const mismatchCount = this.countStatus(items, 'MISMATCH');
+
+    const notApplicableCount = this.countStatus(items, 'NOT_APPLICABLE');
+
+    return {
+      asOf: new Date(quantityResult.asOf.getTime()),
+      items,
+      matchedCount,
+      mismatchCount,
+      notApplicableCount,
+      reconciliationSuccessful: mismatchCount === 0,
+    };
+  }
+
+  private buildItem(
+    quantity: CorporateActionQuantityReconciliationItem,
+    costBasis: CorporateActionCostBasisReconciliationItem,
+  ): CorporateActionPostEventReconciliationItem {
+    const status = this.resolveStatus(quantity.status, costBasis.status);
+
+    return {
+      corporateActionId: this.normalizeId(quantity.corporateActionId),
+
+      corporateActionType: quantity.corporateActionType,
+
+      symbol:
+        quantity.symbol === null ? null : this.normalizeSymbol(quantity.symbol),
+
+      processDate: this.cloneProcessDate(
+        quantity.processDate,
+        quantity.corporateActionId,
+      ),
+
+      quantityStatus: quantity.status,
+      costBasisStatus: costBasis.status,
+      status,
+
+      quantityReason: this.normalizeReason(
+        quantity.reason,
+        'quantity',
+        quantity.corporateActionId,
+      ),
+
+      costBasisReason: this.normalizeReason(
+        costBasis.reason,
+        'cost basis',
+        costBasis.corporateActionId,
+      ),
+    };
+  }
+
+  private resolveStatus(
+    quantityStatus: 'MATCHED' | 'MISMATCH' | 'NOT_APPLICABLE',
+    costBasisStatus: 'MATCHED' | 'MISMATCH' | 'NOT_APPLICABLE',
+  ): CorporateActionPostEventReconciliationStatus {
+    if (quantityStatus === 'MISMATCH' || costBasisStatus === 'MISMATCH') {
+      return 'MISMATCH';
+    }
+
+    if (
+      quantityStatus === 'NOT_APPLICABLE' &&
+      costBasisStatus === 'NOT_APPLICABLE'
+    ) {
+      return 'NOT_APPLICABLE';
+    }
+
+    return 'MATCHED';
+  }
+
+  private indexQuantityItems(
+    items: readonly CorporateActionQuantityReconciliationItem[],
+  ): ReadonlyMap<string, CorporateActionQuantityReconciliationItem> {
+    const indexed = new Map<
+      string,
+      CorporateActionQuantityReconciliationItem
+    >();
+
+    for (const item of items) {
+      const id = this.normalizeId(item.corporateActionId);
+
+      if (indexed.has(id)) {
+        throw new Error(
+          `Duplicate quantity reconciliation result for corporate action ${id}`,
+        );
+      }
+
+      indexed.set(id, item);
+    }
+
+    return indexed;
+  }
+
+  private indexCostBasisItems(
+    items: readonly CorporateActionCostBasisReconciliationItem[],
+  ): ReadonlyMap<string, CorporateActionCostBasisReconciliationItem> {
+    const indexed = new Map<
+      string,
+      CorporateActionCostBasisReconciliationItem
+    >();
+
+    for (const item of items) {
+      const id = this.normalizeId(item.corporateActionId);
+
+      if (indexed.has(id)) {
+        throw new Error(
+          `Duplicate cost-basis reconciliation result for corporate action ${id}`,
+        );
+      }
+
+      indexed.set(id, item);
+    }
+
+    return indexed;
+  }
+
+  private assertSameReferenceDate(
+    quantityAsOf: Date,
+    costBasisAsOf: Date,
+  ): void {
+    const quantityMs = quantityAsOf.getTime();
+
+    const costBasisMs = costBasisAsOf.getTime();
+
+    if (!Number.isFinite(quantityMs) || !Number.isFinite(costBasisMs)) {
+      throw new Error('Invalid post-event reconciliation reference date');
+    }
+
+    if (quantityMs !== costBasisMs) {
+      throw new Error(
+        'Post-event reconciliation sources use different reference dates',
+      );
+    }
+  }
+
+  private assertSameCorporateAction(
+    quantity: CorporateActionQuantityReconciliationItem,
+    costBasis: CorporateActionCostBasisReconciliationItem,
+  ): void {
+    if (quantity.corporateActionType !== costBasis.corporateActionType) {
+      throw new Error(
+        `Corporate action type mismatch during post-event reconciliation for ${quantity.corporateActionId}`,
+      );
+    }
+
+    const quantitySymbol =
+      quantity.symbol === null ? null : this.normalizeSymbol(quantity.symbol);
+
+    const costBasisSymbol =
+      costBasis.symbol === null ? null : this.normalizeSymbol(costBasis.symbol);
+
+    if (quantitySymbol !== costBasisSymbol) {
+      throw new Error(
+        `Corporate action symbol mismatch during post-event reconciliation for ${quantity.corporateActionId}`,
+      );
+    }
+
+    const quantityDate = quantity.processDate.getTime();
+
+    const costBasisDate = costBasis.processDate.getTime();
+
+    if (
+      !Number.isFinite(quantityDate) ||
+      !Number.isFinite(costBasisDate) ||
+      quantityDate !== costBasisDate
+    ) {
+      throw new Error(
+        `Corporate action process date mismatch during post-event reconciliation for ${quantity.corporateActionId}`,
+      );
+    }
+  }
+
+  private countStatus(
+    items: readonly CorporateActionPostEventReconciliationItem[],
+    status: CorporateActionPostEventReconciliationStatus,
+  ): number {
+    return items.filter((item) => item.status === status).length;
+  }
+
+  private normalizeId(value: string): string {
+    const normalized = value.trim();
+
+    if (!normalized) {
+      throw new Error('Invalid corporate action post-event reconciliation ID');
+    }
+
+    return normalized;
+  }
+
+  private normalizeSymbol(value: string): string {
+    const normalized = value.trim().toUpperCase();
+
+    if (!normalized || normalized.length > 32 || /\s/.test(normalized)) {
+      throw new Error(
+        'Invalid corporate action post-event reconciliation symbol',
+      );
+    }
+
+    return normalized;
+  }
+
+  private normalizeReason(
+    value: string,
+    field: string,
+    corporateActionId: string,
+  ): string {
+    const normalized = value.trim();
+
+    if (!normalized) {
+      throw new Error(
+        `Invalid corporate action post-event reconciliation ${field} reason for ${corporateActionId}`,
+      );
+    }
+
+    return normalized;
+  }
+
+  private cloneProcessDate(value: Date, corporateActionId: string): Date {
+    const cloned = new Date(value.getTime());
+
+    if (!Number.isFinite(cloned.getTime())) {
+      throw new Error(
+        `Invalid corporate action post-event reconciliation process date for ${corporateActionId}`,
+      );
+    }
+
+    return cloned;
+  }
+}
+
+
+===== .\src\corporate-actions\corporate-action-post-event-reconciliation.types.ts =====
+import type { CorporateActionType } from './corporate-actions.types';
+
+export const CORPORATE_ACTION_POST_EVENT_RECONCILIATION_STATUSES = [
+  'MATCHED',
+  'MISMATCH',
+  'NOT_APPLICABLE',
+] as const;
+
+export type CorporateActionPostEventReconciliationStatus =
+  (typeof CORPORATE_ACTION_POST_EVENT_RECONCILIATION_STATUSES)[number];
+
+export interface CorporateActionPostEventReconciliationQuery {
+  readonly symbols?: readonly string[];
+  readonly asOf?: Date;
+  readonly start?: string;
+}
+
+export interface CorporateActionPostEventReconciliationItem {
+  readonly corporateActionId: string;
+  readonly corporateActionType: CorporateActionType;
+  readonly symbol: string | null;
+  readonly processDate: Date;
+
+  readonly quantityStatus: 'MATCHED' | 'MISMATCH' | 'NOT_APPLICABLE';
+
+  readonly costBasisStatus: 'MATCHED' | 'MISMATCH' | 'NOT_APPLICABLE';
+
+  readonly status: CorporateActionPostEventReconciliationStatus;
+
+  readonly quantityReason: string;
+  readonly costBasisReason: string;
+}
+
+export interface CorporateActionPostEventReconciliationResult {
+  readonly asOf: Date;
+  readonly items: readonly CorporateActionPostEventReconciliationItem[];
+
+  readonly matchedCount: number;
+  readonly mismatchCount: number;
+  readonly notApplicableCount: number;
+
+  readonly reconciliationSuccessful: boolean;
+}
+
+
+===== .\src\corporate-actions\corporate-action-symbol-update.service.ts =====
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../database/prisma.service';
+import { CorporateActionEffectiveService } from './corporate-action-effective.service';
+import type { CorporateActionEffectiveRecord } from './corporate-action-effective.types';
+import type {
+  CorporateActionSymbolUpdateItem,
+  CorporateActionSymbolUpdateQuery,
+  CorporateActionSymbolUpdateResult,
+} from './corporate-action-symbol-update.types';
+
+@Injectable()
+export class CorporateActionSymbolUpdateService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly effectiveService: CorporateActionEffectiveService,
+  ) {}
+
+  async updateLocalSymbols(
+    query: CorporateActionSymbolUpdateQuery = {},
+  ): Promise<CorporateActionSymbolUpdateResult> {
+    const effective =
+      await this.effectiveService.getEffectiveActions({
+        symbols: query.symbols,
+        types: ['name_change'],
+        asOf: query.asOf,
+        start: query.start,
+      });
+
+    const items = await this.prisma.$transaction(
+      async (transaction) => {
+        const results: CorporateActionSymbolUpdateItem[] = [];
+
+        for (const action of effective.effective) {
+          results.push(
+            await this.applyNameChange(
+              action,
+              transaction,
+            ),
+          );
+        }
+
+        return results;
+      },
+    );
+
+    return {
+      asOf: new Date(effective.asOf),
+      items,
+      updatedEventCount: items.filter(
+        (item) => item.status === 'UPDATED',
+      ).length,
+      noLocalReferencesCount: items.filter(
+        (item) => item.status === 'NO_LOCAL_REFERENCES',
+      ).length,
+      nameOnlyCount: items.filter(
+        (item) => item.status === 'NAME_ONLY',
+      ).length,
+      updatedPlatformOrderCount: items.reduce(
+        (total, item) =>
+          total + item.updatedPlatformOrderCount,
+        0,
+      ),
+    };
+  }
+
+  private async applyNameChange(
+    action: CorporateActionEffectiveRecord,
+    transaction: Parameters<
+      Parameters<PrismaService['$transaction']>[0]
+    >[0],
+  ): Promise<CorporateActionSymbolUpdateItem> {
+    if (action.type !== 'name_change') {
+      throw new Error(
+        `Unexpected corporate action type for symbol update: ${action.type}`,
+      );
+    }
+
+    const oldSymbol = this.requireSymbol(
+      action.raw.old_symbol,
+      'old_symbol',
+      action.id,
+    );
+
+    const newSymbol = this.requireSymbol(
+      action.raw.new_symbol,
+      'new_symbol',
+      action.id,
+    );
+
+    if (oldSymbol === newSymbol) {
+      return {
+        corporateActionId: this.normalizeId(action.id),
+        processDate: this.cloneProcessDate(action),
+        oldSymbol,
+        newSymbol,
+        status: 'NAME_ONLY',
+        updatedPlatformOrderCount: 0,
+      };
+    }
+
+    const update =
+      await transaction.platformAlpacaOrder.updateMany({
+        where: {
+          symbol: oldSymbol,
+        },
+        data: {
+          symbol: newSymbol,
+        },
+      });
+
+    return {
+      corporateActionId: this.normalizeId(action.id),
+      processDate: this.cloneProcessDate(action),
+      oldSymbol,
+      newSymbol,
+      status:
+        update.count > 0
+          ? 'UPDATED'
+          : 'NO_LOCAL_REFERENCES',
+      updatedPlatformOrderCount: update.count,
+    };
+  }
+
+  private cloneProcessDate(
+    action: CorporateActionEffectiveRecord,
+  ): Date {
+    const processDate = new Date(
+      action.processDate.getTime(),
+    );
+
+    if (!Number.isFinite(processDate.getTime())) {
+      throw new Error(
+        `Invalid corporate action process date for ${action.id}`,
+      );
+    }
+
+    return processDate;
+  }
+
+  private normalizeId(id: string): string {
+    const normalized = id.trim();
+
+    if (!normalized) {
+      throw new Error(
+        'Invalid corporate action symbol update ID',
+      );
+    }
+
+    return normalized;
+  }
+
+  private requireSymbol(
+    value: unknown,
+    field: string,
+    id: string,
+  ): string {
+    if (typeof value !== 'string') {
+      throw new Error(
+        `Invalid corporate action symbol update ${field} for ${id}`,
+      );
+    }
+
+    const normalized = value.trim().toUpperCase();
+
+    if (
+      !normalized ||
+      normalized.length > 32 ||
+      /\s/.test(normalized)
+    ) {
+      throw new Error(
+        `Invalid corporate action symbol update ${field} for ${id}`,
+      );
+    }
+
+    return normalized;
+  }
+}
+
+===== .\src\corporate-actions\corporate-action-watchlist-update.service.ts =====
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../database/prisma.service';
+import type { Prisma } from '../generated/prisma/client';
+import { CorporateActionEffectiveService } from './corporate-action-effective.service';
+import type { CorporateActionEffectiveRecord } from './corporate-action-effective.types';
+import type {
+  CorporateActionWatchlistUpdateItem,
+  CorporateActionWatchlistUpdateQuery,
+  CorporateActionWatchlistUpdateResult,
+} from './corporate-action-watchlist-update.types';
+
+@Injectable()
+export class CorporateActionWatchlistUpdateService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly effectiveService: CorporateActionEffectiveService,
+  ) {}
+
+  async updateWatchlist(
+    query: CorporateActionWatchlistUpdateQuery = {},
+  ): Promise<CorporateActionWatchlistUpdateResult> {
+    const effective =
+      await this.effectiveService.getEffectiveActions({
+        symbols: query.symbols,
+        types: ['name_change'],
+        asOf: query.asOf,
+        start: query.start,
+      });
+
+    const items = await this.prisma.$transaction(
+      async (transaction) => {
+        const results: CorporateActionWatchlistUpdateItem[] = [];
+
+        for (const action of effective.effective) {
+          results.push(
+            await this.applyNameChange(
+              action,
+              transaction,
+            ),
+          );
+        }
+
+        return results;
+      },
+    );
+
+    return {
+      asOf: new Date(effective.asOf),
+      items,
+      updatedCount: this.countStatus(
+        items,
+        'UPDATED',
+      ),
+      removedObsoleteDuplicateCount: this.countStatus(
+        items,
+        'REMOVED_OBSOLETE_DUPLICATE',
+      ),
+      notInWatchlistCount: this.countStatus(
+        items,
+        'NOT_IN_WATCHLIST',
+      ),
+      nameOnlyCount: this.countStatus(
+        items,
+        'NAME_ONLY',
+      ),
+    };
+  }
+
+  private async applyNameChange(
+    action: CorporateActionEffectiveRecord,
+    transaction: Prisma.TransactionClient,
+  ): Promise<CorporateActionWatchlistUpdateItem> {
+    if (action.type !== 'name_change') {
+      throw new Error(
+        `Unexpected corporate action type for watchlist update: ${action.type}`,
+      );
+    }
+
+    const id = this.normalizeId(action.id);
+
+    const oldSymbol = this.requireSymbol(
+      action.raw.old_symbol,
+      'old_symbol',
+      id,
+    );
+
+    const newSymbol = this.requireSymbol(
+      action.raw.new_symbol,
+      'new_symbol',
+      id,
+    );
+
+    const processDate = this.cloneProcessDate(
+      action,
+      id,
+    );
+
+    if (oldSymbol === newSymbol) {
+      return {
+        corporateActionId: id,
+        processDate,
+        oldSymbol,
+        newSymbol,
+        status: 'NAME_ONLY',
+      };
+    }
+
+    const [oldEntry, newEntry] = await Promise.all([
+      transaction.watchlistSymbol.findUnique({
+        where: {
+          symbol: oldSymbol,
+        },
+        select: {
+          id: true,
+        },
+      }),
+      transaction.watchlistSymbol.findUnique({
+        where: {
+          symbol: newSymbol,
+        },
+        select: {
+          id: true,
+        },
+      }),
+    ]);
+
+    if (oldEntry === null) {
+      return {
+        corporateActionId: id,
+        processDate,
+        oldSymbol,
+        newSymbol,
+        status: 'NOT_IN_WATCHLIST',
+      };
+    }
+
+    if (newEntry !== null) {
+      await transaction.watchlistSymbol.delete({
+        where: {
+          id: oldEntry.id,
+        },
+      });
+
+      return {
+        corporateActionId: id,
+        processDate,
+        oldSymbol,
+        newSymbol,
+        status: 'REMOVED_OBSOLETE_DUPLICATE',
+      };
+    }
+
+    await transaction.watchlistSymbol.update({
+      where: {
+        id: oldEntry.id,
+      },
+      data: {
+        symbol: newSymbol,
+      },
+    });
+
+    return {
+      corporateActionId: id,
+      processDate,
+      oldSymbol,
+      newSymbol,
+      status: 'UPDATED',
+    };
+  }
+
+  private countStatus(
+    items: readonly CorporateActionWatchlistUpdateItem[],
+    status: CorporateActionWatchlistUpdateItem['status'],
+  ): number {
+    return items.filter(
+      (item) => item.status === status,
+    ).length;
+  }
+
+  private cloneProcessDate(
+    action: CorporateActionEffectiveRecord,
+    id: string,
+  ): Date {
+    const processDate = new Date(
+      action.processDate.getTime(),
+    );
+
+    if (!Number.isFinite(processDate.getTime())) {
+      throw new Error(
+        `Invalid corporate action watchlist update process date for ${id}`,
+      );
+    }
+
+    return processDate;
+  }
+
+  private normalizeId(id: string): string {
+    const normalized = id.trim();
+
+    if (!normalized) {
+      throw new Error(
+        'Invalid corporate action watchlist update ID',
+      );
+    }
+
+    return normalized;
+  }
+
+  private requireSymbol(
+    value: unknown,
+    field: string,
+    id: string,
+  ): string {
+    if (typeof value !== 'string') {
+      throw new Error(
+        `Invalid corporate action watchlist update ${field} for ${id}`,
+      );
+    }
+
+    const normalized = value.trim().toUpperCase();
+
+    if (
+      !normalized ||
+      normalized.length > 32 ||
+      /\s/.test(normalized)
+    ) {
+      throw new Error(
+        `Invalid corporate action watchlist update ${field} for ${id}`,
+      );
+    }
+
+    return normalized;
+  }
+}
+
+===== .\src\corporate-actions\corporate-action-strategy-symbol-update.service.ts =====
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../database/prisma.service';
+import type { Prisma } from '../generated/prisma/client';
+import { CorporateActionEffectiveService } from './corporate-action-effective.service';
+import type { CorporateActionEffectiveRecord } from './corporate-action-effective.types';
+import type {
+  CorporateActionStrategySymbolUpdateItem,
+  CorporateActionStrategySymbolUpdateQuery,
+  CorporateActionStrategySymbolUpdateResult,
+} from './corporate-action-strategy-symbol-update.types';
+
+@Injectable()
+export class CorporateActionStrategySymbolUpdateService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly effectiveService: CorporateActionEffectiveService,
+  ) {}
+
+  async updateStrategySymbols(
+    query: CorporateActionStrategySymbolUpdateQuery = {},
+  ): Promise<CorporateActionStrategySymbolUpdateResult> {
+    const effective =
+      await this.effectiveService.getEffectiveActions({
+        symbols: query.symbols,
+        types: ['name_change'],
+        asOf: query.asOf,
+        start: query.start,
+      });
+
+    const items = await this.prisma.$transaction(
+      async (transaction) => {
+        const results: CorporateActionStrategySymbolUpdateItem[] = [];
+
+        for (const action of effective.effective) {
+          results.push(
+            await this.applyNameChange(
+              action,
+              transaction,
+            ),
+          );
+        }
+
+        return results;
+      },
+    );
+
+    return {
+      asOf: new Date(effective.asOf),
+
+      items,
+
+      updatedEventCount: this.countStatus(
+        items,
+        'UPDATED',
+      ),
+
+      removedObsoleteDuplicateEventCount:
+        this.countStatus(
+          items,
+          'REMOVED_OBSOLETE_DUPLICATE',
+        ),
+
+      notAssociatedCount: this.countStatus(
+        items,
+        'NOT_ASSOCIATED',
+      ),
+
+      nameOnlyCount: this.countStatus(
+        items,
+        'NAME_ONLY',
+      ),
+
+      updatedAssociationCount: items.reduce(
+        (total, item) =>
+          total + item.updatedAssociationCount,
+        0,
+      ),
+
+      removedDuplicateCount: items.reduce(
+        (total, item) =>
+          total + item.removedDuplicateCount,
+        0,
+      ),
+    };
+  }
+
+  private async applyNameChange(
+    action: CorporateActionEffectiveRecord,
+    transaction: Prisma.TransactionClient,
+  ): Promise<CorporateActionStrategySymbolUpdateItem> {
+    if (action.type !== 'name_change') {
+      throw new Error(
+        `Unexpected corporate action type for strategy symbol update: ${action.type}`,
+      );
+    }
+
+    const id = this.normalizeId(action.id);
+
+    const oldSymbol = this.requireSymbol(
+      action.raw.old_symbol,
+      'old_symbol',
+      id,
+    );
+
+    const newSymbol = this.requireSymbol(
+      action.raw.new_symbol,
+      'new_symbol',
+      id,
+    );
+
+    const processDate =
+      this.cloneProcessDate(action, id);
+
+    if (oldSymbol === newSymbol) {
+      return {
+        corporateActionId: id,
+        processDate,
+        oldSymbol,
+        newSymbol,
+        status: 'NAME_ONLY',
+        updatedAssociationCount: 0,
+        removedDuplicateCount: 0,
+      };
+    }
+
+    const oldAssociations =
+      await transaction.strategySymbolAssociation.findMany({
+        where: {
+          symbol: oldSymbol,
+        },
+        select: {
+          id: true,
+          strategyId: true,
+        },
+      });
+
+    if (oldAssociations.length === 0) {
+      return {
+        corporateActionId: id,
+        processDate,
+        oldSymbol,
+        newSymbol,
+        status: 'NOT_ASSOCIATED',
+        updatedAssociationCount: 0,
+        removedDuplicateCount: 0,
+      };
+    }
+
+    let updatedAssociationCount = 0;
+    let removedDuplicateCount = 0;
+
+    for (const association of oldAssociations) {
+      const existingNew =
+        await transaction.strategySymbolAssociation.findUnique({
+          where: {
+            strategyId_symbol: {
+              strategyId: association.strategyId,
+              symbol: newSymbol,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+      if (existingNew !== null) {
+        await transaction.strategySymbolAssociation.delete({
+          where: {
+            id: association.id,
+          },
+        });
+
+        removedDuplicateCount += 1;
+        continue;
+      }
+
+      await transaction.strategySymbolAssociation.update({
+        where: {
+          id: association.id,
+        },
+        data: {
+          symbol: newSymbol,
+        },
+      });
+
+      updatedAssociationCount += 1;
+    }
+
+    return {
+      corporateActionId: id,
+      processDate,
+      oldSymbol,
+      newSymbol,
+      status:
+        updatedAssociationCount > 0
+          ? 'UPDATED'
+          : 'REMOVED_OBSOLETE_DUPLICATE',
+      updatedAssociationCount,
+      removedDuplicateCount,
+    };
+  }
+
+  private countStatus(
+    items: readonly CorporateActionStrategySymbolUpdateItem[],
+    status: CorporateActionStrategySymbolUpdateItem['status'],
+  ): number {
+    return items.filter(
+      (item) => item.status === status,
+    ).length;
+  }
+
+  private cloneProcessDate(
+    action: CorporateActionEffectiveRecord,
+    id: string,
+  ): Date {
+    const processDate = new Date(
+      action.processDate.getTime(),
+    );
+
+    if (!Number.isFinite(processDate.getTime())) {
+      throw new Error(
+        `Invalid corporate action strategy symbol update process date for ${id}`,
+      );
+    }
+
+    return processDate;
+  }
+
+  private normalizeId(id: string): string {
+    const normalized = id.trim();
+
+    if (!normalized) {
+      throw new Error(
+        'Invalid corporate action strategy symbol update ID',
+      );
+    }
+
+    return normalized;
+  }
+
+  private requireSymbol(
+    value: unknown,
+    field: string,
+    id: string,
+  ): string {
+    if (typeof value !== 'string') {
+      throw new Error(
+        `Invalid corporate action strategy symbol update ${field} for ${id}`,
+      );
+    }
+
+    const normalized =
+      value.trim().toUpperCase();
+
+    if (
+      !normalized ||
+      normalized.length > 32 ||
+      /\s/.test(normalized)
+    ) {
+      throw new Error(
+        `Invalid corporate action strategy symbol update ${field} for ${id}`,
+      );
+    }
+
+    return normalized;
+  }
+}
+
+===== .\src\corporate-actions\corporate-action-market-data-cache-invalidation.service.ts =====
+import { Injectable } from '@nestjs/common';
+import { MarketDataCacheService } from '../market-data/market-data-cache.service';
+import { CorporateActionEffectiveService } from './corporate-action-effective.service';
+import type { CorporateActionEffectiveRecord } from './corporate-action-effective.types';
+import type {
+  CorporateActionMarketDataCacheInvalidationItem,
+  CorporateActionMarketDataCacheInvalidationQuery,
+  CorporateActionMarketDataCacheInvalidationResult,
+} from './corporate-action-market-data-cache-invalidation.types';
+
+@Injectable()
+export class CorporateActionMarketDataCacheInvalidationService {
+  constructor(
+    private readonly cache: MarketDataCacheService,
+    private readonly effectiveService: CorporateActionEffectiveService,
+  ) {}
+
+  async invalidateAffectedCache(
+    query: CorporateActionMarketDataCacheInvalidationQuery = {},
+  ): Promise<CorporateActionMarketDataCacheInvalidationResult> {
+    const effective = await this.effectiveService.getEffectiveActions({
+      symbols: query.symbols,
+      asOf: query.asOf,
+      start: query.start,
+    });
+
+    const items = effective.effective.map((action) =>
+      this.invalidateAction(action),
+    );
+
+    const affectedSymbols = new Set<string>();
+
+    for (const item of items) {
+      for (const symbol of item.affectedSymbols) {
+        affectedSymbols.add(symbol);
+      }
+    }
+
+    return {
+      asOf: new Date(effective.asOf),
+      items,
+      affectedSymbolCount: affectedSymbols.size,
+      invalidatedEntryCount: items.reduce(
+        (total, item) => total + item.invalidatedEntryCount,
+        0,
+      ),
+    };
+  }
+
+  private invalidateAction(
+    action: CorporateActionEffectiveRecord,
+  ): CorporateActionMarketDataCacheInvalidationItem {
+    const id = this.normalizeId(action.id);
+
+    const processDate = this.cloneProcessDate(action, id);
+
+    const affectedSymbols = this.resolveAffectedSymbols(action, id);
+
+    let invalidatedEntryCount = 0;
+
+    for (const symbol of affectedSymbols) {
+      invalidatedEntryCount += this.invalidateSymbol(symbol);
+    }
+
+    return {
+      corporateActionId: id,
+      corporateActionType: action.type,
+      processDate,
+      affectedSymbols,
+      invalidatedEntryCount,
+    };
+  }
+
+  private resolveAffectedSymbols(
+    action: CorporateActionEffectiveRecord,
+    id: string,
+  ): string[] {
+    const symbols = new Set<string>();
+
+    if (action.symbol !== null) {
+      symbols.add(this.normalizeSymbol(action.symbol, 'symbol', id));
+    }
+
+    if (action.type === 'name_change') {
+      symbols.add(
+        this.requireRawSymbol(action.raw.old_symbol, 'old_symbol', id),
+      );
+
+      symbols.add(
+        this.requireRawSymbol(action.raw.new_symbol, 'new_symbol', id),
+      );
+    }
+
+    return [...symbols];
+  }
+
+  private invalidateSymbol(symbol: string): number {
+    const encodedSymbol = encodeURIComponent(symbol);
+
+    const prefix = `/v2/stocks/${encodedSymbol}/`;
+
+    return this.cache.deleteByPrefix(prefix);
+  }
+
+  private requireRawSymbol(value: unknown, field: string, id: string): string {
+    if (typeof value !== 'string') {
+      throw new Error(
+        `Invalid corporate action market-data cache invalidation ${field} for ${id}`,
+      );
+    }
+
+    return this.normalizeSymbol(value, field, id);
+  }
+
+  private normalizeSymbol(value: string, field: string, id: string): string {
+    const symbol = value.trim().toUpperCase();
+
+    if (!symbol || symbol.length > 32 || /\s/.test(symbol)) {
+      throw new Error(
+        `Invalid corporate action market-data cache invalidation ${field} for ${id}`,
+      );
+    }
+
+    return symbol;
+  }
+
+  private normalizeId(id: string): string {
+    const normalized = id.trim();
+
+    if (!normalized) {
+      throw new Error(
+        'Invalid corporate action market-data cache invalidation ID',
+      );
+    }
+
+    return normalized;
+  }
+
+  private cloneProcessDate(
+    action: CorporateActionEffectiveRecord,
+    id: string,
+  ): Date {
+    const processDate = new Date(action.processDate.getTime());
+
+    if (!Number.isFinite(processDate.getTime())) {
+      throw new Error(
+        `Invalid corporate action market-data cache invalidation process date for ${id}`,
+      );
+    }
+
+    return processDate;
+  }
+}
+
+
+===== .\src\corporate-actions\corporate-actions.module.ts =====
+import { Module } from '@nestjs/common';
+import { CorporateActionAdjustmentHistoryService } from './corporate-action-adjustment-history.service';
+import { CorporateActionCashDividendService } from './corporate-action-cash-dividend.service';
+import { CorporateActionCostBasisReconciliationService } from './corporate-action-cost-basis-reconciliation.service';
+import { CorporateActionEntryBlockService } from './corporate-action-entry-block.service';
+import { CorporateActionEffectiveService } from './corporate-action-effective.service';
+import { CorporateActionMarketDataCacheInvalidationService } from './corporate-action-market-data-cache-invalidation.service';
+import { CorporateActionMergerService } from './corporate-action-merger.service';
+import { CorporateActionNameChangeService } from './corporate-action-name-change.service';
+import { CorporateActionOpenOrderAssociationService } from './corporate-action-open-order-association.service';
+import { CorporateActionPendingOrderReviewService } from './corporate-action-pending-order-review.service';
+import { CorporateActionPendingService } from './corporate-action-pending.service';
+import { CorporateActionPositionAssociationService } from './corporate-action-position-association.service';
+import { CorporateActionPostEventReconciliationService } from './corporate-action-post-event-reconciliation.service';
+import { CorporateActionQuantityReconciliationService } from './corporate-action-quantity-reconciliation.service';
+import { CorporateActionRedemptionService } from './corporate-action-redemption.service';
+import { CorporateActionSpinOffService } from './corporate-action-spin-off.service';
+import { CorporateActionStockDividendService } from './corporate-action-stock-dividend.service';
+import { CorporateActionStrategySymbolUpdateService } from './corporate-action-strategy-symbol-update.service';
+import { CorporateActionSymbolUpdateService } from './corporate-action-symbol-update.service';
+import { CorporateActionSplitService } from './corporate-action-split.service';
+import { CorporateActionWatchlistUpdateService } from './corporate-action-watchlist-update.service';
+import { CorporateActionWorthlessRemovalService } from './corporate-action-worthless-removal.service';
+import { CorporateActionsService } from './corporate-actions.service';
+
+@Module({
+  providers: [
+    CorporateActionCashDividendService,
+    CorporateActionCostBasisReconciliationService,
+    CorporateActionEntryBlockService,
+    CorporateActionEffectiveService,
+    CorporateActionMarketDataCacheInvalidationService,
+    CorporateActionMergerService,
+    CorporateActionNameChangeService,
+    CorporateActionOpenOrderAssociationService,
+    CorporateActionPendingOrderReviewService,
+    CorporateActionPendingService,
+    CorporateActionPositionAssociationService,
+    CorporateActionPostEventReconciliationService,
+    CorporateActionQuantityReconciliationService,
+    CorporateActionRedemptionService,
+    CorporateActionSpinOffService,
+    CorporateActionStockDividendService,
+    CorporateActionStrategySymbolUpdateService,
+    CorporateActionSymbolUpdateService,
+    CorporateActionSplitService,
+    CorporateActionWatchlistUpdateService,
+    CorporateActionWorthlessRemovalService,
+    CorporateActionsService,
+  ],
+  exports: [
+    CorporateActionCashDividendService,
+    CorporateActionCostBasisReconciliationService,
+    CorporateActionEntryBlockService,
+    CorporateActionEffectiveService,
+    CorporateActionMarketDataCacheInvalidationService,
+    CorporateActionMergerService,
+    CorporateActionNameChangeService,
+    CorporateActionOpenOrderAssociationService,
+    CorporateActionPendingOrderReviewService,
+    CorporateActionPendingService,
+    CorporateActionPositionAssociationService,
+    CorporateActionPostEventReconciliationService,
+    CorporateActionQuantityReconciliationService,
+    CorporateActionRedemptionService,
+    CorporateActionSpinOffService,
+    CorporateActionStockDividendService,
+    CorporateActionStrategySymbolUpdateService,
+    CorporateActionSymbolUpdateService,
+    CorporateActionSplitService,
+    CorporateActionWatchlistUpdateService,
+    CorporateActionWorthlessRemovalService,
+    CorporateActionsService,
+  ],
+})
+export class CorporateActionsModule {}
+
+
+===== REFERENCIAS A CORPORATE ACTION HISTORY / RECONCILIATION / ADJUSTMENT =====
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-adjustment-history.service.ts:5:   CorporateActionAdjustmentHistoryRecord,
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-adjustment-history.service.ts:13: export class CorporateActionAdjustmentHistoryService {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-adjustment-history.service.ts:18:   ): Promise<CorporateActionAdjustmentHistoryRecord> {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-adjustment-history.service.ts:40:     const created = await this.prisma.corporateActionAdjustmentHistory.create({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-adjustment-history.types.ts:24: export interface CorporateActionAdjustmentHistoryRecord {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-market-data-cache-invalidation.service.ts:18:   async invalidateAffectedCache(
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-post-event-reconciliation.service.ts:20:   async reconcilePostEvent(
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-strategy-symbol-update.service.ts:19:   async updateStrategySymbols(
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-symbol-update.service.ts:18:   async updateLocalSymbols(
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-action-watchlist-update.service.ts:19:   async updateWatchlist(
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\corporate-actions\corporate-actions.module.ts:2: import { CorporateActionAdjustmentHistoryService } from './corporate-action-adjustment-history.service';
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\browser.ts:86:  * Model CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\browser.ts:89: export type CorporateActionAdjustmentHistory = Prisma.CorporateActionAdjustmentHistoryModel
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\client.ts:108:  * Model CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\client.ts:111: export type CorporateActionAdjustmentHistory = Prisma.CorporateActionAdjustmentHistoryModel
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models.ts:24: export type * from './models/CorporateActionAdjustmentHistory.js'
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\class.ts:23:   "inlineSchema": "generator client {\n  provider     = \"prisma-client\"\n  output       = \"../src/generated/prisma\"\n  moduleFormat = \"cjs\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nenum RecordStatus {\n  ACTIVE\n  INACTIVE\n  ARCHIVED\n}\n\nenum MarketDataAnomalyType {\n  FUTURE_BAR\n  MISSING_BAR_GAP\n  OUTSIDE_SESSION\n  PRICE_SANITY\n  TOO_OLD_DATA\n}\n\nenum AlpacaMarginClassification {\n  LIMITED_MARGIN_1X\n  REG_T_MARGIN_2X\n  INTRADAY_MARGIN_4X\n}\n\nmodel SystemMetadata {\n  id        String                   @id @default(cuid())\n  key       String                   @unique\n  value     String\n  status    RecordStatus             @default(ACTIVE)\n  version   Int                      @default(0)\n  createdAt DateTime                 @default(now())\n  updatedAt DateTime                 @updatedAt\n  revisions SystemMetadataRevision[]\n}\n\nmodel SystemMetadataRevision {\n  id               String   @id @default(cuid())\n  systemMetadataId String\n  value            String\n  createdAt        DateTime @default(now())\n  updatedAt        DateTime @updatedAt\n\n  systemMetadata SystemMetadata @relation(fields: [systemMetadataId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@unique([systemMetadataId, createdAt])\n  @@index([systemMetadataId])\n  @@index([createdAt])\n}\n\nmodel FinancialConstraintProbe {\n  id        String   @id @default(cuid())\n  amount    Decimal  @db.Decimal(20, 8)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel PersistentLock {\n  id         String   @id\n  key        String   @unique\n  ownerId    String\n  acquiredAt DateTime @default(now())\n  expiresAt  DateTime\n  updatedAt  DateTime @updatedAt\n\n  @@index([expiresAt])\n  @@index([ownerId])\n}\n\nmodel SingleOperator {\n  id                       String        @id\n  username                 String        @unique\n  displayName              String\n  passwordHash             String?\n  enabled                  Boolean       @default(true)\n  failedLoginAttempts      Int           @default(0)\n  failedLoginWindowStartAt DateTime?\n  lastFailedLoginAt        DateTime?\n  loginLockedUntil         DateTime?\n  createdAt                DateTime      @default(now())\n  updatedAt                DateTime      @updatedAt\n  sessions                 AuthSession[]\n  auditEvents              AuditEvent[]\n}\n\nmodel AuthSession {\n  id                   String    @id @default(cuid())\n  operatorId           String\n  tokenHash            String    @unique\n  csrfTokenHash        String\n  expiresAt            DateTime\n  reauthenticatedUntil DateTime?\n  createdAt            DateTime  @default(now())\n  updatedAt            DateTime  @updatedAt\n\n  operator SingleOperator @relation(fields: [operatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@index([operatorId])\n  @@index([expiresAt])\n}\n\nenum AuditAction {\n  REAUTHENTICATION\n  REVOKE_ALL_SESSIONS\n}\n\nenum AuditOutcome {\n  SUCCESS\n  FAILURE\n}\n\nmodel AuditEvent {\n  id            String       @id @default(cuid())\n  operatorId    String\n  action        AuditAction\n  outcome       AuditOutcome\n  correlationId String?\n  metadata      Json?\n  createdAt     DateTime     @default(now())\n\n  operator SingleOperator @relation(fields: [operatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)\n\n  @@index([operatorId])\n  @@index([action])\n  @@index([outcome])\n  @@index([createdAt])\n  @@index([correlationId])\n}\n\nmodel PlatformAlpacaOrder {\n  id            String   @id @default(cuid())\n  alpacaOrderId String   @unique\n  clientOrderId String   @unique\n  symbol        String\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n\n  @@index([symbol])\n  @@index([createdAt])\n}\n\nmodel AlpacaAccountRestrictionSnapshot {\n  id                   String                     @id @default(cuid())\n  alpacaAccountId      String                     @unique\n  accountStatus        String\n  marginClassification AlpacaMarginClassification\n  multiplier           Int\n\n  tradingBlocked       Boolean\n  accountBlocked       Boolean\n  transfersBlocked     Boolean\n  tradeSuspendedByUser Boolean\n  shortingDisabled     Boolean\n  leverageDisabled     Boolean\n\n  tradingAllowed   Boolean\n  transfersAllowed Boolean\n  shortingAllowed  Boolean\n  leverageAllowed  Boolean\n\n  buyingPower              Decimal @db.Decimal(20, 8)\n  regtBuyingPower          Decimal @db.Decimal(20, 8)\n  nonMarginableBuyingPower Decimal @db.Decimal(20, 8)\n\n  initialMargin         Decimal @db.Decimal(20, 8)\n  maintenanceMargin     Decimal @db.Decimal(20, 8)\n  lastMaintenanceMargin Decimal @db.Decimal(20, 8)\n  sma                   Decimal @db.Decimal(20, 8)\n\n  syncedAt  DateTime\n  version   Int      @default(0)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([accountStatus])\n  @@index([marginClassification])\n  @@index([tradingAllowed])\n  @@index([syncedAt])\n}\n\nmodel MarketDataAnomaly {\n  id            String                @id @default(cuid())\n  type          MarketDataAnomalyType\n  symbol        String?\n  timestamp     DateTime?\n  referenceAt   DateTime?\n  details       Json\n  correlationId String?\n  detectedAt    DateTime              @default(now())\n  createdAt     DateTime              @default(now())\n\n  @@index([type])\n  @@index([symbol])\n  @@index([timestamp])\n  @@index([detectedAt])\n  @@index([correlationId])\n}\n\nenum MarketDataHaltEventType {\n  HALT\n  RESUME\n}\n\nmodel MarketDataHaltEvent {\n  id            String                  @id @default(cuid())\n  type          MarketDataHaltEventType\n  symbol        String\n  eventAt       DateTime\n  receivedAt    DateTime\n  statusCode    String\n  statusMessage String\n  reasonCode    String\n  reasonMessage String\n  tape          String\n  feed          String\n  correlationId String?\n  createdAt     DateTime                @default(now())\n\n  @@index([type])\n  @@index([symbol])\n  @@index([eventAt])\n  @@index([createdAt])\n  @@index([correlationId])\n  @@index([symbol, eventAt])\n}\n\nmodel WatchlistSymbol {\n  id        String   @id @default(cuid())\n  symbol    String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([createdAt])\n}\n\nmodel StrategySymbolAssociation {\n  id         String   @id @default(cuid())\n  strategyId String\n  symbol     String\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@unique([strategyId, symbol])\n  @@index([strategyId])\n  @@index([symbol])\n  @@index([createdAt])\n}\n\nmodel CorporateActionAdjustmentHistory {\n  id                  String   @id @default(cuid())\n  corporateActionId   String\n  corporateActionType String\n  symbol              String?\n  processDate         DateTime\n  adjustmentType      String\n  status              String\n  details             Json\n  recordedAt          DateTime @default(now())\n\n  @@index([corporateActionId])\n  @@index([corporateActionType])\n  @@index([symbol])\n  @@index([processDate])\n  @@index([adjustmentType])\n  @@index([recordedAt])\n}\n",
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\class.ts:35: config.runtimeDataModel = JSON.parse("{\"models\":{\"SystemMetadata\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"key\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"RecordStatus\"},{\"name\":\"version\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"revisions\",\"kind\":\"object\",\"type\":\"SystemMetadataRevision\",\"relationName\":\"SystemMetadataToSystemMetadataRevision\"}],\"dbName\":null},\"SystemMetadataRevision\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"systemMetadataId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"systemMetadata\",\"kind\":\"object\",\"type\":\"SystemMetadata\",\"relationName\":\"SystemMetadataToSystemMetadataRevision\"}],\"dbName\":null},\"FinancialConstraintProbe\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"PersistentLock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"key\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"acquiredAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"SingleOperator\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"displayName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"passwordHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"enabled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"failedLoginAttempts\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"failedLoginWindowStartAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"lastFailedLoginAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"loginLockedUntil\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"AuthSession\",\"relationName\":\"AuthSessionToSingleOperator\"},{\"name\":\"auditEvents\",\"kind\":\"object\",\"type\":\"AuditEvent\",\"relationName\":\"AuditEventToSingleOperator\"}],\"dbName\":null},\"AuthSession\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"operatorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tokenHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"csrfTokenHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"reauthenticatedUntil\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"operator\",\"kind\":\"object\",\"type\":\"SingleOperator\",\"relationName\":\"AuthSessionToSingleOperator\"}],\"dbName\":null},\"AuditEvent\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"operatorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"action\",\"kind\":\"enum\",\"type\":\"AuditAction\"},{\"name\":\"outcome\",\"kind\":\"enum\",\"type\":\"AuditOutcome\"},{\"name\":\"correlationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"operator\",\"kind\":\"object\",\"type\":\"SingleOperator\",\"relationName\":\"AuditEventToSingleOperator\"}],\"dbName\":null},\"PlatformAlpacaOrder\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"alpacaOrderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"clientOrderId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"AlpacaAccountRestrictionSnapshot\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"alpacaAccountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accountStatus\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"marginClassification\",\"kind\":\"enum\",\"type\":\"AlpacaMarginClassification\"},{\"name\":\"multiplier\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"tradingBlocked\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"accountBlocked\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"transfersBlocked\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"tradeSuspendedByUser\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"shortingDisabled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"leverageDisabled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"tradingAllowed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"transfersAllowed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"shortingAllowed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"leverageAllowed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"buyingPower\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"regtBuyingPower\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"nonMarginableBuyingPower\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"initialMargin\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"maintenanceMargin\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"lastMaintenanceMargin\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"sma\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"syncedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"version\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"MarketDataAnomaly\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"MarketDataAnomalyType\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"referenceAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"details\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"correlationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"detectedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"MarketDataHaltEvent\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"MarketDataHaltEventType\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"eventAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"receivedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"statusCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"statusMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reasonCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reasonMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tape\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"feed\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"correlationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"WatchlistSymbol\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"StrategySymbolAssociation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"strategyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"CorporateActionAdjustmentHistory\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"corporateActionId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"corporateActionType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"processDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"adjustmentType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"details\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"recordedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\class.ts:37:   strings: JSON.parse("[\"where\",\"orderBy\",\"cursor\",\"systemMetadata\",\"revisions\",\"_count\",\"SystemMetadata.findUnique\",\"SystemMetadata.findUniqueOrThrow\",\"SystemMetadata.findFirst\",\"SystemMetadata.findFirstOrThrow\",\"SystemMetadata.findMany\",\"data\",\"SystemMetadata.createOne\",\"SystemMetadata.createMany\",\"SystemMetadata.createManyAndReturn\",\"SystemMetadata.updateOne\",\"SystemMetadata.updateMany\",\"SystemMetadata.updateManyAndReturn\",\"create\",\"update\",\"SystemMetadata.upsertOne\",\"SystemMetadata.deleteOne\",\"SystemMetadata.deleteMany\",\"having\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"SystemMetadata.groupBy\",\"SystemMetadata.aggregate\",\"SystemMetadataRevision.findUnique\",\"SystemMetadataRevision.findUniqueOrThrow\",\"SystemMetadataRevision.findFirst\",\"SystemMetadataRevision.findFirstOrThrow\",\"SystemMetadataRevision.findMany\",\"SystemMetadataRevision.createOne\",\"SystemMetadataRevision.createMany\",\"SystemMetadataRevision.createManyAndReturn\",\"SystemMetadataRevision.updateOne\",\"SystemMetadataRevision.updateMany\",\"SystemMetadataRevision.updateManyAndReturn\",\"SystemMetadataRevision.upsertOne\",\"SystemMetadataRevision.deleteOne\",\"SystemMetadataRevision.deleteMany\",\"SystemMetadataRevision.groupBy\",\"SystemMetadataRevision.aggregate\",\"FinancialConstraintProbe.findUnique\",\"FinancialConstraintProbe.findUniqueOrThrow\",\"FinancialConstraintProbe.findFirst\",\"FinancialConstraintProbe.findFirstOrThrow\",\"FinancialConstraintProbe.findMany\",\"FinancialConstraintProbe.createOne\",\"FinancialConstraintProbe.createMany\",\"FinancialConstraintProbe.createManyAndReturn\",\"FinancialConstraintProbe.updateOne\",\"FinancialConstraintProbe.updateMany\",\"FinancialConstraintProbe.updateManyAndReturn\",\"FinancialConstraintProbe.upsertOne\",\"FinancialConstraintProbe.deleteOne\",\"FinancialConstraintProbe.deleteMany\",\"FinancialConstraintProbe.groupBy\",\"FinancialConstraintProbe.aggregate\",\"PersistentLock.findUnique\",\"PersistentLock.findUniqueOrThrow\",\"PersistentLock.findFirst\",\"PersistentLock.findFirstOrThrow\",\"PersistentLock.findMany\",\"PersistentLock.createOne\",\"PersistentLock.createMany\",\"PersistentLock.createManyAndReturn\",\"PersistentLock.updateOne\",\"PersistentLock.updateMany\",\"PersistentLock.updateManyAndReturn\",\"PersistentLock.upsertOne\",\"PersistentLock.deleteOne\",\"PersistentLock.deleteMany\",\"PersistentLock.groupBy\",\"PersistentLock.aggregate\",\"operator\",\"sessions\",\"auditEvents\",\"SingleOperator.findUnique\",\"SingleOperator.findUniqueOrThrow\",\"SingleOperator.findFirst\",\"SingleOperator.findFirstOrThrow\",\"SingleOperator.findMany\",\"SingleOperator.createOne\",\"SingleOperator.createMany\",\"SingleOperator.createManyAndReturn\",\"SingleOperator.updateOne\",\"SingleOperator.updateMany\",\"SingleOperator.updateManyAndReturn\",\"SingleOperator.upsertOne\",\"SingleOperator.deleteOne\",\"SingleOperator.deleteMany\",\"SingleOperator.groupBy\",\"SingleOperator.aggregate\",\"AuthSession.findUnique\",\"AuthSession.findUniqueOrThrow\",\"AuthSession.findFirst\",\"AuthSession.findFirstOrThrow\",\"AuthSession.findMany\",\"AuthSession.createOne\",\"AuthSession.createMany\",\"AuthSession.createManyAndReturn\",\"AuthSession.updateOne\",\"AuthSession.updateMany\",\"AuthSession.updateManyAndReturn\",\"AuthSession.upsertOne\",\"AuthSession.deleteOne\",\"AuthSession.deleteMany\",\"AuthSession.groupBy\",\"AuthSession.aggregate\",\"AuditEvent.findUnique\",\"AuditEvent.findUniqueOrThrow\",\"AuditEvent.findFirst\",\"AuditEvent.findFirstOrThrow\",\"AuditEvent.findMany\",\"AuditEvent.createOne\",\"AuditEvent.createMany\",\"AuditEvent.createManyAndReturn\",\"AuditEvent.updateOne\",\"AuditEvent.updateMany\",\"AuditEvent.updateManyAndReturn\",\"AuditEvent.upsertOne\",\"AuditEvent.deleteOne\",\"AuditEvent.deleteMany\",\"AuditEvent.groupBy\",\"AuditEvent.aggregate\",\"PlatformAlpacaOrder.findUnique\",\"PlatformAlpacaOrder.findUniqueOrThrow\",\"PlatformAlpacaOrder.findFirst\",\"PlatformAlpacaOrder.findFirstOrThrow\",\"PlatformAlpacaOrder.findMany\",\"PlatformAlpacaOrder.createOne\",\"PlatformAlpacaOrder.createMany\",\"PlatformAlpacaOrder.createManyAndReturn\",\"PlatformAlpacaOrder.updateOne\",\"PlatformAlpacaOrder.updateMany\",\"PlatformAlpacaOrder.updateManyAndReturn\",\"PlatformAlpacaOrder.upsertOne\",\"PlatformAlpacaOrder.deleteOne\",\"PlatformAlpacaOrder.deleteMany\",\"PlatformAlpacaOrder.groupBy\",\"PlatformAlpacaOrder.aggregate\",\"AlpacaAccountRestrictionSnapshot.findUnique\",\"AlpacaAccountRestrictionSnapshot.findUniqueOrThrow\",\"AlpacaAccountRestrictionSnapshot.findFirst\",\"AlpacaAccountRestrictionSnapshot.findFirstOrThrow\",\"AlpacaAccountRestrictionSnapshot.findMany\",\"AlpacaAccountRestrictionSnapshot.createOne\",\"AlpacaAccountRestrictionSnapshot.createMany\",\"AlpacaAccountRestrictionSnapshot.createManyAndReturn\",\"AlpacaAccountRestrictionSnapshot.updateOne\",\"AlpacaAccountRestrictionSnapshot.updateMany\",\"AlpacaAccountRestrictionSnapshot.updateManyAndReturn\",\"AlpacaAccountRestrictionSnapshot.upsertOne\",\"AlpacaAccountRestrictionSnapshot.deleteOne\",\"AlpacaAccountRestrictionSnapshot.deleteMany\",\"AlpacaAccountRestrictionSnapshot.groupBy\",\"AlpacaAccountRestrictionSnapshot.aggregate\",\"MarketDataAnomaly.findUnique\",\"MarketDataAnomaly.findUniqueOrThrow\",\"MarketDataAnomaly.findFirst\",\"MarketDataAnomaly.findFirstOrThrow\",\"MarketDataAnomaly.findMany\",\"MarketDataAnomaly.createOne\",\"MarketDataAnomaly.createMany\",\"MarketDataAnomaly.createManyAndReturn\",\"MarketDataAnomaly.updateOne\",\"MarketDataAnomaly.updateMany\",\"MarketDataAnomaly.updateManyAndReturn\",\"MarketDataAnomaly.upsertOne\",\"MarketDataAnomaly.deleteOne\",\"MarketDataAnomaly.deleteMany\",\"MarketDataAnomaly.groupBy\",\"MarketDataAnomaly.aggregate\",\"MarketDataHaltEvent.findUnique\",\"MarketDataHaltEvent.findUniqueOrThrow\",\"MarketDataHaltEvent.findFirst\",\"MarketDataHaltEvent.findFirstOrThrow\",\"MarketDataHaltEvent.findMany\",\"MarketDataHaltEvent.createOne\",\"MarketDataHaltEvent.createMany\",\"MarketDataHaltEvent.createManyAndReturn\",\"MarketDataHaltEvent.updateOne\",\"MarketDataHaltEvent.updateMany\",\"MarketDataHaltEvent.updateManyAndReturn\",\"MarketDataHaltEvent.upsertOne\",\"MarketDataHaltEvent.deleteOne\",\"MarketDataHaltEvent.deleteMany\",\"MarketDataHaltEvent.groupBy\",\"MarketDataHaltEvent.aggregate\",\"WatchlistSymbol.findUnique\",\"WatchlistSymbol.findUniqueOrThrow\",\"WatchlistSymbol.findFirst\",\"WatchlistSymbol.findFirstOrThrow\",\"WatchlistSymbol.findMany\",\"WatchlistSymbol.createOne\",\"WatchlistSymbol.createMany\",\"WatchlistSymbol.createManyAndReturn\",\"WatchlistSymbol.updateOne\",\"WatchlistSymbol.updateMany\",\"WatchlistSymbol.updateManyAndReturn\",\"WatchlistSymbol.upsertOne\",\"WatchlistSymbol.deleteOne\",\"WatchlistSymbol.deleteMany\",\"WatchlistSymbol.groupBy\",\"WatchlistSymbol.aggregate\",\"StrategySymbolAssociation.findUnique\",\"StrategySymbolAssociation.findUniqueOrThrow\",\"StrategySymbolAssociation.findFirst\",\"StrategySymbolAssociation.findFirstOrThrow\",\"StrategySymbolAssociation.findMany\",\"StrategySymbolAssociation.createOne\",\"StrategySymbolAssociation.createMany\",\"StrategySymbolAssociation.createManyAndReturn\",\"StrategySymbolAssociation.updateOne\",\"StrategySymbolAssociation.updateMany\",\"StrategySymbolAssociation.updateManyAndReturn\",\"StrategySymbolAssociation.upsertOne\",\"StrategySymbolAssociation.deleteOne\",\"StrategySymbolAssociation.deleteMany\",\"StrategySymbolAssociation.groupBy\",\"StrategySymbolAssociation.aggregate\",\"CorporateActionAdjustmentHistory.findUnique\",\"CorporateActionAdjustmentHistory.findUniqueOrThrow\",\"CorporateActionAdjustmentHistory.findFirst\",\"CorporateActionAdjustmentHistory.findFirstOrThrow\",\"CorporateActionAdjustmentHistory.findMany\",\"CorporateActionAdjustmentHistory.createOne\",\"CorporateActionAdjustmentHistory.createMany\",\"CorporateActionAdjustmentHistory.createManyAndReturn\",\"CorporateActionAdjustmentHistory.updateOne\",\"CorporateActionAdjustmentHistory.updateMany\",\"CorporateActionAdjustmentHistory.updateManyAndReturn\",\"CorporateActionAdjustmentHistory.upsertOne\",\"CorporateActionAdjustmentHistory.deleteOne\",\"CorporateActionAdjustmentHistory.deleteMany\",\"CorporateActionAdjustmentHistory.groupBy\",\"CorporateActionAdjustmentHistory.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"corporateActionId\",\"corporateActionType\",\"symbol\",\"processDate\",\"adjustmentType\",\"status\",\"details\",\"recordedAt\",\"equals\",\"string_contains\",\"string_starts_with\",\"string_ends_with\",\"array_starts_with\",\"array_ends_with\",\"array_contains\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"in\",\"notIn\",\"contains\",\"startsWith\",\"endsWith\",\"strategyId\",\"createdAt\",\"updatedAt\",\"strategyId_symbol\",\"MarketDataHaltEventType\",\"type\",\"eventAt\",\"receivedAt\",\"statusCode\",\"statusMessage\",\"reasonCode\",\"reasonMessage\",\"tape\",\"feed\",\"correlationId\",\"MarketDataAnomalyType\",\"timestamp\",\"referenceAt\",\"detectedAt\",\"alpacaAccountId\",\"accountStatus\",\"AlpacaMarginClassification\",\"marginClassification\",\"multiplier\",\"tradingBlocked\",\"accountBlocked\",\"transfersBlocked\",\"tradeSuspendedByUser\",\"shortingDisabled\",\"leverageDisabled\",\"tradingAllowed\",\"transfersAllowed\",\"shortingAllowed\",\"leverageAllowed\",\"buyingPower\",\"regtBuyingPower\",\"nonMarginableBuyingPower\",\"initialMargin\",\"maintenanceMargin\",\"lastMaintenanceMargin\",\"sma\",\"syncedAt\",\"version\",\"alpacaOrderId\",\"clientOrderId\",\"operatorId\",\"AuditAction\",\"action\",\"AuditOutcome\",\"outcome\",\"metadata\",\"tokenHash\",\"csrfTokenHash\",\"expiresAt\",\"reauthenticatedUntil\",\"username\",\"displayName\",\"passwordHash\",\"enabled\",\"failedLoginAttempts\",\"failedLoginWindowStartAt\",\"lastFailedLoginAt\",\"loginLockedUntil\",\"every\",\"some\",\"none\",\"key\",\"ownerId\",\"acquiredAt\",\"amount\",\"systemMetadataId\",\"value\",\"RecordStatus\",\"systemMetadataId_createdAt\",\"is\",\"isNot\",\"connectOrCreate\",\"upsert\",\"createMany\",\"set\",\"disconnect\",\"delete\",\"connect\",\"updateMany\",\"deleteMany\",\"increment\",\"decrement\",\"multiply\",\"divide\"]"),
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\class.ts:322:    * `prisma.corporateActionAdjustmentHistory`: Exposes CRUD operations for the **CorporateActionAdjustmentHistory** model.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\class.ts:326:     * const corporateActionAdjustmentHistories = await prisma.corporateActionAdjustmentHistory.findMany()
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\class.ts:329:   get corporateActionAdjustmentHistory(): Prisma.CorporateActionAdjustmentHistoryDelegate<ExtArgs, { omit: OmitOpts }>;
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:413:   CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory'
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:429:     modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory"
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1395:     CorporateActionAdjustmentHistory: {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1396:       payload: Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1397:       fields: Prisma.CorporateActionAdjustmentHistoryFieldRefs
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1400:           args: Prisma.CorporateActionAdjustmentHistoryFindUniqueArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1401:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1404:           args: Prisma.CorporateActionAdjustmentHistoryFindUniqueOrThrowArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1405:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1408:           args: Prisma.CorporateActionAdjustmentHistoryFindFirstArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1409:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1412:           args: Prisma.CorporateActionAdjustmentHistoryFindFirstOrThrowArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1413:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1416:           args: Prisma.CorporateActionAdjustmentHistoryFindManyArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1417:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1420:           args: Prisma.CorporateActionAdjustmentHistoryCreateArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1421:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1424:           args: Prisma.CorporateActionAdjustmentHistoryCreateManyArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1428:           args: Prisma.CorporateActionAdjustmentHistoryCreateManyAndReturnArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1429:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1432:           args: Prisma.CorporateActionAdjustmentHistoryDeleteArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1433:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1436:           args: Prisma.CorporateActionAdjustmentHistoryUpdateArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1437:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1440:           args: Prisma.CorporateActionAdjustmentHistoryDeleteManyArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1444:           args: Prisma.CorporateActionAdjustmentHistoryUpdateManyArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1448:           args: Prisma.CorporateActionAdjustmentHistoryUpdateManyAndReturnArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1449:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1452:           args: Prisma.CorporateActionAdjustmentHistoryUpsertArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1453:           result: runtime.Types.Utils.PayloadToResult<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1456:           args: Prisma.CorporateActionAdjustmentHistoryAggregateArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1457:           result: runtime.Types.Utils.Optional<Prisma.AggregateCorporateActionAdjustmentHistory>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1460:           args: Prisma.CorporateActionAdjustmentHistoryGroupByArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1461:           result: runtime.Types.Utils.Optional<Prisma.CorporateActionAdjustmentHistoryGroupByOutputType>[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1464:           args: Prisma.CorporateActionAdjustmentHistoryCountArgs<ExtArgs>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1465:           result: runtime.Types.Utils.Optional<Prisma.CorporateActionAdjustmentHistoryCountAggregateOutputType> | number
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1697: export const CorporateActionAdjustmentHistoryScalarFieldEnum = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:1709: export type CorporateActionAdjustmentHistoryScalarFieldEnum = (typeof CorporateActionAdjustmentHistoryScalarFieldEnum)[keyof typeof CorporateActionAdjustmentHistoryScalarFieldEnum]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespace.ts:2104:   corporateActionAdjustmentHistory?: Prisma.CorporateActionAdjustmentHistoryOmit
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespaceBrowser.ts:67:   CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory'
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespaceBrowser.ts:275: export const CorporateActionAdjustmentHistoryScalarFieldEnum = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\internal\prismaNamespaceBrowser.ts:287: export type CorporateActionAdjustmentHistoryScalarFieldEnum = (typeof CorporateActionAdjustmentHistoryScalarFieldEnum)[keyof typeof CorporateActionAdjustmentHistoryScalarFieldEnum]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:7:  * This file exports the `CorporateActionAdjustmentHistory` model and its related types.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:16:  * Model CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:19: export type CorporateActionAdjustmentHistoryModel = runtime.Types.Result.DefaultSelection<Prisma.$CorporateActionAdjustmentHistoryPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:21: export type AggregateCorporateActionAdjustmentHistory = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:22:   _count: CorporateActionAdjustmentHistoryCountAggregateOutputType | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:23:   _min: CorporateActionAdjustmentHistoryMinAggregateOutputType | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:24:   _max: CorporateActionAdjustmentHistoryMaxAggregateOutputType | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:27: export type CorporateActionAdjustmentHistoryMinAggregateOutputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:38: export type CorporateActionAdjustmentHistoryMaxAggregateOutputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:49: export type CorporateActionAdjustmentHistoryCountAggregateOutputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:63: export type CorporateActionAdjustmentHistoryMinAggregateInputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:74: export type CorporateActionAdjustmentHistoryMaxAggregateInputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:85: export type CorporateActionAdjustmentHistoryCountAggregateInputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:98: export type CorporateActionAdjustmentHistoryAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:100:    * Filter which CorporateActionAdjustmentHistory to aggregate.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:102:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:108:   orderBy?: Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput | Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:114:   cursor?: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:132:   _count?: true | CorporateActionAdjustmentHistoryCountAggregateInputType
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:138:   _min?: CorporateActionAdjustmentHistoryMinAggregateInputType
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:144:   _max?: CorporateActionAdjustmentHistoryMaxAggregateInputType
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:147: export type GetCorporateActionAdjustmentHistoryAggregateType<T extends CorporateActionAdjustmentHistoryAggregateArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:148:       [P in keyof T & keyof AggregateCorporateActionAdjustmentHistory]: P extends '_count' | 'count'
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:151:       : Prisma.GetScalarType<T[P], AggregateCorporateActionAdjustmentHistory[P]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:152:     : Prisma.GetScalarType<T[P], AggregateCorporateActionAdjustmentHistory[P]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:158: export type CorporateActionAdjustmentHistoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:159:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:160:   orderBy?: Prisma.CorporateActionAdjustmentHistoryOrderByWithAggregationInput | Prisma.CorporateActionAdjustmentHistoryOrderByWithAggregationInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:161:   by: Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum[] | Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:162:   having?: Prisma.CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:165:   _count?: CorporateActionAdjustmentHistoryCountAggregateInputType | true
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:166:   _min?: CorporateActionAdjustmentHistoryMinAggregateInputType
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:167:   _max?: CorporateActionAdjustmentHistoryMaxAggregateInputType
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:170: export type CorporateActionAdjustmentHistoryGroupByOutputType = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:180:   _count: CorporateActionAdjustmentHistoryCountAggregateOutputType | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:181:   _min: CorporateActionAdjustmentHistoryMinAggregateOutputType | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:182:   _max: CorporateActionAdjustmentHistoryMaxAggregateOutputType | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:185: export type GetCorporateActionAdjustmentHistoryGroupByPayload<T extends CorporateActionAdjustmentHistoryGroupByArgs> = Prisma.PrismaPromise<
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:187:     Prisma.PickEnumerable<CorporateActionAdjustmentHistoryGroupByOutputType, T['by']> &
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:189:         [P in ((keyof T) & (keyof CorporateActionAdjustmentHistoryGroupByOutputType))]: P extends '_count'
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:192:             : Prisma.GetScalarType<T[P], CorporateActionAdjustmentHistoryGroupByOutputType[P]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:193:           : Prisma.GetScalarType<T[P], CorporateActionAdjustmentHistoryGroupByOutputType[P]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:200: export type CorporateActionAdjustmentHistoryWhereInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:201:   AND?: Prisma.CorporateActionAdjustmentHistoryWhereInput | Prisma.CorporateActionAdjustmentHistoryWhereInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:202:   OR?: Prisma.CorporateActionAdjustmentHistoryWhereInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:203:   NOT?: Prisma.CorporateActionAdjustmentHistoryWhereInput | Prisma.CorporateActionAdjustmentHistoryWhereInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:204:   id?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:205:   corporateActionId?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:206:   corporateActionType?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:207:   symbol?: Prisma.StringNullableFilter<"CorporateActionAdjustmentHistory"> | string | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:208:   processDate?: Prisma.DateTimeFilter<"CorporateActionAdjustmentHistory"> | Date | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:209:   adjustmentType?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:210:   status?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:211:   details?: Prisma.JsonFilter<"CorporateActionAdjustmentHistory">
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:212:   recordedAt?: Prisma.DateTimeFilter<"CorporateActionAdjustmentHistory"> | Date | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:215: export type CorporateActionAdjustmentHistoryOrderByWithRelationInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:227: export type CorporateActionAdjustmentHistoryWhereUniqueInput = Prisma.AtLeast<{
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:229:   AND?: Prisma.CorporateActionAdjustmentHistoryWhereInput | Prisma.CorporateActionAdjustmentHistoryWhereInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:230:   OR?: Prisma.CorporateActionAdjustmentHistoryWhereInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:231:   NOT?: Prisma.CorporateActionAdjustmentHistoryWhereInput | Prisma.CorporateActionAdjustmentHistoryWhereInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:232:   corporateActionId?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:233:   corporateActionType?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:234:   symbol?: Prisma.StringNullableFilter<"CorporateActionAdjustmentHistory"> | string | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:235:   processDate?: Prisma.DateTimeFilter<"CorporateActionAdjustmentHistory"> | Date | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:236:   adjustmentType?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:237:   status?: Prisma.StringFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:238:   details?: Prisma.JsonFilter<"CorporateActionAdjustmentHistory">
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:239:   recordedAt?: Prisma.DateTimeFilter<"CorporateActionAdjustmentHistory"> | Date | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:242: export type CorporateActionAdjustmentHistoryOrderByWithAggregationInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:252:   _count?: Prisma.CorporateActionAdjustmentHistoryCountOrderByAggregateInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:253:   _max?: Prisma.CorporateActionAdjustmentHistoryMaxOrderByAggregateInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:254:   _min?: Prisma.CorporateActionAdjustmentHistoryMinOrderByAggregateInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:257: export type CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:258:   AND?: Prisma.CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput | Prisma.CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:259:   OR?: Prisma.CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:260:   NOT?: Prisma.CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput | Prisma.CorporateActionAdjustmentHistoryScalarWhereWithAggregatesInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:261:   id?: Prisma.StringWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:262:   corporateActionId?: Prisma.StringWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:263:   corporateActionType?: Prisma.StringWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:264:   symbol?: Prisma.StringNullableWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | string | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:265:   processDate?: Prisma.DateTimeWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | Date | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:266:   adjustmentType?: Prisma.StringWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:267:   status?: Prisma.StringWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:268:   details?: Prisma.JsonWithAggregatesFilter<"CorporateActionAdjustmentHistory">
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:269:   recordedAt?: Prisma.DateTimeWithAggregatesFilter<"CorporateActionAdjustmentHistory"> | Date | string
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:272: export type CorporateActionAdjustmentHistoryCreateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:284: export type CorporateActionAdjustmentHistoryUncheckedCreateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:296: export type CorporateActionAdjustmentHistoryUpdateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:308: export type CorporateActionAdjustmentHistoryUncheckedUpdateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:320: export type CorporateActionAdjustmentHistoryCreateManyInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:332: export type CorporateActionAdjustmentHistoryUpdateManyMutationInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:344: export type CorporateActionAdjustmentHistoryUncheckedUpdateManyInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:356: export type CorporateActionAdjustmentHistoryCountOrderByAggregateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:368: export type CorporateActionAdjustmentHistoryMaxOrderByAggregateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:379: export type CorporateActionAdjustmentHistoryMinOrderByAggregateInput = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:392: export type CorporateActionAdjustmentHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:402: }, ExtArgs["result"]["corporateActionAdjustmentHistory"]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:404: export type CorporateActionAdjustmentHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:414: }, ExtArgs["result"]["corporateActionAdjustmentHistory"]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:416: export type CorporateActionAdjustmentHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:426: }, ExtArgs["result"]["corporateActionAdjustmentHistory"]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:428: export type CorporateActionAdjustmentHistorySelectScalar = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:440: export type CorporateActionAdjustmentHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "corporateActionId" | "corporateActionType" | "symbol" | "processDate" | "adjustmentType" | "status" | "details" | "recordedAt", ExtArgs["result"]["corporateActionAdjustmentHistory"]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:442: export type $CorporateActionAdjustmentHistoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:443:   name: "CorporateActionAdjustmentHistory"
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:455:   }, ExtArgs["result"]["corporateActionAdjustmentHistory"]>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:459: export type CorporateActionAdjustmentHistoryGetPayload<S extends boolean | null | undefined | CorporateActionAdjustmentHistoryDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload, S>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:461: export type CorporateActionAdjustmentHistoryCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:462:   Omit<CorporateActionAdjustmentHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:463:     select?: CorporateActionAdjustmentHistoryCountAggregateInputType | true
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:466: export interface CorporateActionAdjustmentHistoryDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:467:   [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CorporateActionAdjustmentHistory'], meta: { name: 'CorporateActionAdjustmentHistory' } }
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:469:    * Find zero or one CorporateActionAdjustmentHistory that matches the filter.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:470:    * @param {CorporateActionAdjustmentHistoryFindUniqueArgs} args - Arguments to find a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:472:    * // Get one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:473:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.findUnique({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:479:   findUnique<T extends CorporateActionAdjustmentHistoryFindUniqueArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryFindUniqueArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:482:    * Find one CorporateActionAdjustmentHistory that matches the filter or throw an error with `error.code='P2025'`
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:484:    * @param {CorporateActionAdjustmentHistoryFindUniqueOrThrowArgs} args - Arguments to find a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:486:    * // Get one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:487:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.findUniqueOrThrow({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:493:   findUniqueOrThrow<T extends CorporateActionAdjustmentHistoryFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:496:    * Find the first CorporateActionAdjustmentHistory that matches the filter.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:499:    * @param {CorporateActionAdjustmentHistoryFindFirstArgs} args - Arguments to find a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:501:    * // Get one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:502:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.findFirst({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:508:   findFirst<T extends CorporateActionAdjustmentHistoryFindFirstArgs>(args?: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryFindFirstArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:511:    * Find the first CorporateActionAdjustmentHistory that matches the filter or
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:515:    * @param {CorporateActionAdjustmentHistoryFindFirstOrThrowArgs} args - Arguments to find a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:517:    * // Get one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:518:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.findFirstOrThrow({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:524:   findFirstOrThrow<T extends CorporateActionAdjustmentHistoryFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:530:    * @param {CorporateActionAdjustmentHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:533:    * const corporateActionAdjustmentHistories = await prisma.corporateActionAdjustmentHistory.findMany()
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:536:    * const corporateActionAdjustmentHistories = await prisma.corporateActionAdjustmentHistory.findMany({ take: 10 })
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:539:    * const corporateActionAdjustmentHistoryWithIdOnly = await prisma.corporateActionAdjustmentHistory.findMany({ select: { id: true } })
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:542:   findMany<T extends CorporateActionAdjustmentHistoryFindManyArgs>(args?: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:545:    * Create a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:546:    * @param {CorporateActionAdjustmentHistoryCreateArgs} args - Arguments to create a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:548:    * // Create one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:549:    * const CorporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.create({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:551:    *     // ... data to create a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:556:   create<T extends CorporateActionAdjustmentHistoryCreateArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryCreateArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:560:    * @param {CorporateActionAdjustmentHistoryCreateManyArgs} args - Arguments to create many CorporateActionAdjustmentHistories.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:563:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.createMany({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:570:   createMany<T extends CorporateActionAdjustmentHistoryCreateManyArgs>(args?: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:574:    * @param {CorporateActionAdjustmentHistoryCreateManyAndReturnArgs} args - Arguments to create many CorporateActionAdjustmentHistories.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:577:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.createManyAndReturn({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:584:    * const corporateActionAdjustmentHistoryWithIdOnly = await prisma.corporateActionAdjustmentHistory.createManyAndReturn({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:594:   createManyAndReturn<T extends CorporateActionAdjustmentHistoryCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:597:    * Delete a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:598:    * @param {CorporateActionAdjustmentHistoryDeleteArgs} args - Arguments to delete one CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:600:    * // Delete one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:601:    * const CorporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.delete({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:603:    *     // ... filter to delete one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:608:   delete<T extends CorporateActionAdjustmentHistoryDeleteArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryDeleteArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:611:    * Update one CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:612:    * @param {CorporateActionAdjustmentHistoryUpdateArgs} args - Arguments to update one CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:614:    * // Update one CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:615:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.update({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:625:   update<T extends CorporateActionAdjustmentHistoryUpdateArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryUpdateArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:629:    * @param {CorporateActionAdjustmentHistoryDeleteManyArgs} args - Arguments to filter CorporateActionAdjustmentHistories to delete.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:632:    * const { count } = await prisma.corporateActionAdjustmentHistory.deleteMany({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:639:   deleteMany<T extends CorporateActionAdjustmentHistoryDeleteManyArgs>(args?: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:645:    * @param {CorporateActionAdjustmentHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:648:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.updateMany({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:658:   updateMany<T extends CorporateActionAdjustmentHistoryUpdateManyArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:662:    * @param {CorporateActionAdjustmentHistoryUpdateManyAndReturnArgs} args - Arguments to update many CorporateActionAdjustmentHistories.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:665:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.updateManyAndReturn({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:675:    * const corporateActionAdjustmentHistoryWithIdOnly = await prisma.corporateActionAdjustmentHistory.updateManyAndReturn({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:688:   updateManyAndReturn<T extends CorporateActionAdjustmentHistoryUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:691:    * Create or update one CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:692:    * @param {CorporateActionAdjustmentHistoryUpsertArgs} args - Arguments to update or create a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:694:    * // Update or create a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:695:    * const corporateActionAdjustmentHistory = await prisma.corporateActionAdjustmentHistory.upsert({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:697:    *     // ... data to create a CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:703:    *     // ... the filter for the CorporateActionAdjustmentHistory we want to update
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:707:   upsert<T extends CorporateActionAdjustmentHistoryUpsertArgs>(args: Prisma.SelectSubset<T, CorporateActionAdjustmentHistoryUpsertArgs<ExtArgs>>): Prisma.Prisma__CorporateActionAdjustmentHistoryClient<runtime.Types.Result.GetResult<Prisma.$CorporateActionAdjustmentHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:714:    * @param {CorporateActionAdjustmentHistoryCountArgs} args - Arguments to filter CorporateActionAdjustmentHistories to count.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:717:    * const count = await prisma.corporateActionAdjustmentHistory.count({
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:723:   count<T extends CorporateActionAdjustmentHistoryCountArgs>(
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:724:     args?: Prisma.Subset<T, CorporateActionAdjustmentHistoryCountArgs>,
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:729:         : Prisma.GetScalarType<T['select'], CorporateActionAdjustmentHistoryCountAggregateOutputType>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:734:    * Allows you to perform aggregations operations on a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:737:    * @param {CorporateActionAdjustmentHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:757:   aggregate<T extends CorporateActionAdjustmentHistoryAggregateArgs>(args: Prisma.Subset<T, CorporateActionAdjustmentHistoryAggregateArgs>): Prisma.PrismaPromise<GetCorporateActionAdjustmentHistoryAggregateType<T>>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:760:    * Group by CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:763:    * @param {CorporateActionAdjustmentHistoryGroupByArgs} args - Group by arguments.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:778:     T extends CorporateActionAdjustmentHistoryGroupByArgs,
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:784:       ? { orderBy: CorporateActionAdjustmentHistoryGroupByArgs['orderBy'] }
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:785:       : { orderBy?: CorporateActionAdjustmentHistoryGroupByArgs['orderBy'] },
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:834:   >(args: Prisma.SubsetIntersection<T, CorporateActionAdjustmentHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCorporateActionAdjustmentHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:836:  * Fields of the CorporateActionAdjustmentHistory model
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:838: readonly fields: CorporateActionAdjustmentHistoryFieldRefs;
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:842:  * The delegate class that acts as a "Promise-like" for CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:847: export interface Prisma__CorporateActionAdjustmentHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:875:  * Fields of the CorporateActionAdjustmentHistory model
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:877: export interface CorporateActionAdjustmentHistoryFieldRefs {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:878:   readonly id: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'String'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:879:   readonly corporateActionId: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'String'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:880:   readonly corporateActionType: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'String'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:881:   readonly symbol: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'String'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:882:   readonly processDate: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'DateTime'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:883:   readonly adjustmentType: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'String'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:884:   readonly status: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'String'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:885:   readonly details: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'Json'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:886:   readonly recordedAt: Prisma.FieldRef<"CorporateActionAdjustmentHistory", 'DateTime'>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:892:  * CorporateActionAdjustmentHistory findUnique
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:894: export type CorporateActionAdjustmentHistoryFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:896:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:898:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:900:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:902:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:904:    * Filter, which CorporateActionAdjustmentHistory to fetch.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:906:   where: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:910:  * CorporateActionAdjustmentHistory findUniqueOrThrow
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:912: export type CorporateActionAdjustmentHistoryFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:914:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:916:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:918:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:920:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:922:    * Filter, which CorporateActionAdjustmentHistory to fetch.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:924:   where: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:928:  * CorporateActionAdjustmentHistory findFirst
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:930: export type CorporateActionAdjustmentHistoryFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:932:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:934:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:936:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:938:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:940:    * Filter, which CorporateActionAdjustmentHistory to fetch.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:942:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:948:   orderBy?: Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput | Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:954:   cursor?: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:972:   distinct?: Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum | Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:976:  * CorporateActionAdjustmentHistory findFirstOrThrow
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:978: export type CorporateActionAdjustmentHistoryFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:980:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:982:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:984:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:986:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:988:    * Filter, which CorporateActionAdjustmentHistory to fetch.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:990:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:996:   orderBy?: Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput | Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1002:   cursor?: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1020:   distinct?: Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum | Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1024:  * CorporateActionAdjustmentHistory findMany
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1026: export type CorporateActionAdjustmentHistoryFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1028:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1030:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1032:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1034:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1038:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1044:   orderBy?: Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput | Prisma.CorporateActionAdjustmentHistoryOrderByWithRelationInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1050:   cursor?: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1068:   distinct?: Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum | Prisma.CorporateActionAdjustmentHistoryScalarFieldEnum[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1072:  * CorporateActionAdjustmentHistory create
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1074: export type CorporateActionAdjustmentHistoryCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1076:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1078:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1080:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1082:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1084:    * The data needed to create a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1086:   data: Prisma.XOR<Prisma.CorporateActionAdjustmentHistoryCreateInput, Prisma.CorporateActionAdjustmentHistoryUncheckedCreateInput>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1090:  * CorporateActionAdjustmentHistory createMany
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1092: export type CorporateActionAdjustmentHistoryCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1096:   data: Prisma.CorporateActionAdjustmentHistoryCreateManyInput | Prisma.CorporateActionAdjustmentHistoryCreateManyInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1101:  * CorporateActionAdjustmentHistory createManyAndReturn
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1103: export type CorporateActionAdjustmentHistoryCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1105:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1107:   select?: Prisma.CorporateActionAdjustmentHistorySelectCreateManyAndReturn<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1109:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1111:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1115:   data: Prisma.CorporateActionAdjustmentHistoryCreateManyInput | Prisma.CorporateActionAdjustmentHistoryCreateManyInput[]
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1120:  * CorporateActionAdjustmentHistory update
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1122: export type CorporateActionAdjustmentHistoryUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1124:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1126:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1128:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1130:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1132:    * The data needed to update a CorporateActionAdjustmentHistory.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1134:   data: Prisma.XOR<Prisma.CorporateActionAdjustmentHistoryUpdateInput, Prisma.CorporateActionAdjustmentHistoryUncheckedUpdateInput>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1136:    * Choose, which CorporateActionAdjustmentHistory to update.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1138:   where: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1142:  * CorporateActionAdjustmentHistory updateMany
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1144: export type CorporateActionAdjustmentHistoryUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1148:   data: Prisma.XOR<Prisma.CorporateActionAdjustmentHistoryUpdateManyMutationInput, Prisma.CorporateActionAdjustmentHistoryUncheckedUpdateManyInput>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1152:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1160:  * CorporateActionAdjustmentHistory updateManyAndReturn
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1162: export type CorporateActionAdjustmentHistoryUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1164:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1166:   select?: Prisma.CorporateActionAdjustmentHistorySelectUpdateManyAndReturn<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1168:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1170:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1174:   data: Prisma.XOR<Prisma.CorporateActionAdjustmentHistoryUpdateManyMutationInput, Prisma.CorporateActionAdjustmentHistoryUncheckedUpdateManyInput>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1178:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1186:  * CorporateActionAdjustmentHistory upsert
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1188: export type CorporateActionAdjustmentHistoryUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1190:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1192:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1194:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1196:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1198:    * The filter to search for the CorporateActionAdjustmentHistory to update in case it exists.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1200:   where: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1202:    * In case the CorporateActionAdjustmentHistory found by the `where` argument doesn't exist, create a new CorporateActionAdjustmentHistory with this data.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1204:   create: Prisma.XOR<Prisma.CorporateActionAdjustmentHistoryCreateInput, Prisma.CorporateActionAdjustmentHistoryUncheckedCreateInput>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1206:    * In case the CorporateActionAdjustmentHistory was found with the provided `where` argument, update it with this data.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1208:   update: Prisma.XOR<Prisma.CorporateActionAdjustmentHistoryUpdateInput, Prisma.CorporateActionAdjustmentHistoryUncheckedUpdateInput>
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1212:  * CorporateActionAdjustmentHistory delete
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1214: export type CorporateActionAdjustmentHistoryDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1216:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1218:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1220:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1222:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1224:    * Filter which CorporateActionAdjustmentHistory to delete.
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1226:   where: Prisma.CorporateActionAdjustmentHistoryWhereUniqueInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1230:  * CorporateActionAdjustmentHistory deleteMany
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1232: export type CorporateActionAdjustmentHistoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1236:   where?: Prisma.CorporateActionAdjustmentHistoryWhereInput
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1244:  * CorporateActionAdjustmentHistory without action
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1246: export type CorporateActionAdjustmentHistoryDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1248:    * Select specific fields to fetch from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1250:   select?: Prisma.CorporateActionAdjustmentHistorySelect<ExtArgs> | null
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1252:    * Omit specific fields from the CorporateActionAdjustmentHistory
+C:\Users\Juan Cruz\Desktop\Tradin Propio\backend\src\generated\prisma\models\CorporateActionAdjustmentHistory.ts:1254:   omit?: Prisma.CorporateActionAdjustmentHistoryOmit<ExtArgs> | null

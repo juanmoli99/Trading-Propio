@@ -61,7 +61,10 @@ export const ModelName = {
   PlatformAlpacaOrder: 'PlatformAlpacaOrder',
   AlpacaAccountRestrictionSnapshot: 'AlpacaAccountRestrictionSnapshot',
   MarketDataAnomaly: 'MarketDataAnomaly',
-  MarketDataHaltEvent: 'MarketDataHaltEvent'
+  MarketDataHaltEvent: 'MarketDataHaltEvent',
+  WatchlistSymbol: 'WatchlistSymbol',
+  StrategySymbolAssociation: 'StrategySymbolAssociation',
+  CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -246,6 +249,42 @@ export const MarketDataHaltEventScalarFieldEnum = {
 } as const
 
 export type MarketDataHaltEventScalarFieldEnum = (typeof MarketDataHaltEventScalarFieldEnum)[keyof typeof MarketDataHaltEventScalarFieldEnum]
+
+
+export const WatchlistSymbolScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WatchlistSymbolScalarFieldEnum = (typeof WatchlistSymbolScalarFieldEnum)[keyof typeof WatchlistSymbolScalarFieldEnum]
+
+
+export const StrategySymbolAssociationScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StrategySymbolAssociationScalarFieldEnum = (typeof StrategySymbolAssociationScalarFieldEnum)[keyof typeof StrategySymbolAssociationScalarFieldEnum]
+
+
+export const CorporateActionAdjustmentHistoryScalarFieldEnum = {
+  id: 'id',
+  corporateActionId: 'corporateActionId',
+  corporateActionType: 'corporateActionType',
+  symbol: 'symbol',
+  processDate: 'processDate',
+  adjustmentType: 'adjustmentType',
+  status: 'status',
+  details: 'details',
+  recordedAt: 'recordedAt'
+} as const
+
+export type CorporateActionAdjustmentHistoryScalarFieldEnum = (typeof CorporateActionAdjustmentHistoryScalarFieldEnum)[keyof typeof CorporateActionAdjustmentHistoryScalarFieldEnum]
 
 
 export const SortOrder = {

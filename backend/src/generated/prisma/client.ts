@@ -94,3 +94,18 @@ export type MarketDataAnomaly = Prisma.MarketDataAnomalyModel
  * 
  */
 export type MarketDataHaltEvent = Prisma.MarketDataHaltEventModel
+/**
+ * Model WatchlistSymbol
+ * 
+ */
+export type WatchlistSymbol = Prisma.WatchlistSymbolModel
+/**
+ * Model StrategySymbolAssociation
+ * 
+ */
+export type StrategySymbolAssociation = Prisma.StrategySymbolAssociationModel
+/**
+ * Model CorporateActionAdjustmentHistory
+ * 
+ */
+export type CorporateActionAdjustmentHistory = Prisma.CorporateActionAdjustmentHistoryModel
