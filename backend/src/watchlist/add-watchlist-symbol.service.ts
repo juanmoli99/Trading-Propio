@@ -1,0 +1,43 @@
+import { Injectable } from '@nestjs/common';
+import { SymbolValidationService } from '../symbols/symbol-validation.service';
+import type {
+  AddWatchlistSymbolInput,
+  AddWatchlistSymbolResult,
+} from './add-watchlist-symbol.types';
+import { WatchlistRepository } from './watchlist.repository';
+
+@Injectable()
+export class AddWatchlistSymbolService {
+  constructor(
+    private readonly symbolValidationService: SymbolValidationService,
+    private readonly watchlistRepository: WatchlistRepository,
+  ) {}
+
+  async addSymbol(
+    input: AddWatchlistSymbolInput,
+  ): Promise<AddWatchlistSymbolResult> {
+    const validation = await this.symbolValidationService.validateSymbol({
+      symbol: input.symbol,
+    });
+
+    const existing = await this.watchlistRepository.findBySymbol(
+      validation.symbol.symbol,
+    );
+
+    if (existing !== null) {
+      throw new Error(
+        `Watchlist symbol ${validation.symbol.symbol} already exists`,
+      );
+    }
+
+    const entry = await this.watchlistRepository.create({
+      symbol: validation.symbol.symbol,
+      tradingSymbolId: validation.symbol.id,
+    });
+
+    return {
+      entry,
+      validationStatus: validation.validationStatus,
+    };
+  }
+}

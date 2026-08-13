@@ -87,3 +87,23 @@ export type StrategySymbolAssociation = Prisma.StrategySymbolAssociationModel
  * 
  */
 export type CorporateActionAdjustmentHistory = Prisma.CorporateActionAdjustmentHistoryModel
+/**
+ * Model TradingSymbol
+ * 
+ */
+export type TradingSymbol = Prisma.TradingSymbolModel
+/**
+ * Model SymbolWhitelistEntry
+ * 
+ */
+export type SymbolWhitelistEntry = Prisma.SymbolWhitelistEntryModel
+/**
+ * Model SymbolBlacklistEntry
+ * 
+ */
+export type SymbolBlacklistEntry = Prisma.SymbolBlacklistEntryModel
+/**
+ * Model SymbolTemporaryBlock
+ * 
+ */
+export type SymbolTemporaryBlock = Prisma.SymbolTemporaryBlockModel

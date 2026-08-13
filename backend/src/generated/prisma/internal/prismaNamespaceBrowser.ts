@@ -64,7 +64,11 @@ export const ModelName = {
   MarketDataHaltEvent: 'MarketDataHaltEvent',
   WatchlistSymbol: 'WatchlistSymbol',
   StrategySymbolAssociation: 'StrategySymbolAssociation',
-  CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory'
+  CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory',
+  TradingSymbol: 'TradingSymbol',
+  SymbolWhitelistEntry: 'SymbolWhitelistEntry',
+  SymbolBlacklistEntry: 'SymbolBlacklistEntry',
+  SymbolTemporaryBlock: 'SymbolTemporaryBlock'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -254,6 +258,9 @@ export type MarketDataHaltEventScalarFieldEnum = (typeof MarketDataHaltEventScal
 export const WatchlistSymbolScalarFieldEnum = {
   id: 'id',
   symbol: 'symbol',
+  tradingSymbolId: 'tradingSymbolId',
+  status: 'status',
+  version: 'version',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -285,6 +292,62 @@ export const CorporateActionAdjustmentHistoryScalarFieldEnum = {
 } as const
 
 export type CorporateActionAdjustmentHistoryScalarFieldEnum = (typeof CorporateActionAdjustmentHistoryScalarFieldEnum)[keyof typeof CorporateActionAdjustmentHistoryScalarFieldEnum]
+
+
+export const TradingSymbolScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  status: 'status',
+  alpacaAssetId: 'alpacaAssetId',
+  assetClass: 'assetClass',
+  exchange: 'exchange',
+  name: 'name',
+  alpacaStatus: 'alpacaStatus',
+  tradable: 'tradable',
+  fractionable: 'fractionable',
+  shortable: 'shortable',
+  easyToBorrow: 'easyToBorrow',
+  lastValidatedAt: 'lastValidatedAt',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TradingSymbolScalarFieldEnum = (typeof TradingSymbolScalarFieldEnum)[keyof typeof TradingSymbolScalarFieldEnum]
+
+
+export const SymbolWhitelistEntryScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SymbolWhitelistEntryScalarFieldEnum = (typeof SymbolWhitelistEntryScalarFieldEnum)[keyof typeof SymbolWhitelistEntryScalarFieldEnum]
+
+
+export const SymbolBlacklistEntryScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  reason: 'reason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SymbolBlacklistEntryScalarFieldEnum = (typeof SymbolBlacklistEntryScalarFieldEnum)[keyof typeof SymbolBlacklistEntryScalarFieldEnum]
+
+
+export const SymbolTemporaryBlockScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  reason: 'reason',
+  blockedAt: 'blockedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SymbolTemporaryBlockScalarFieldEnum = (typeof SymbolTemporaryBlockScalarFieldEnum)[keyof typeof SymbolTemporaryBlockScalarFieldEnum]
 
 
 export const SortOrder = {

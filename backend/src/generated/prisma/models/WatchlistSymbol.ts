@@ -20,13 +20,26 @@ export type WatchlistSymbolModel = runtime.Types.Result.DefaultSelection<Prisma.
 
 export type AggregateWatchlistSymbol = {
   _count: WatchlistSymbolCountAggregateOutputType | null
+  _avg: WatchlistSymbolAvgAggregateOutputType | null
+  _sum: WatchlistSymbolSumAggregateOutputType | null
   _min: WatchlistSymbolMinAggregateOutputType | null
   _max: WatchlistSymbolMaxAggregateOutputType | null
+}
+
+export type WatchlistSymbolAvgAggregateOutputType = {
+  version: number | null
+}
+
+export type WatchlistSymbolSumAggregateOutputType = {
+  version: number | null
 }
 
 export type WatchlistSymbolMinAggregateOutputType = {
   id: string | null
   symbol: string | null
+  tradingSymbolId: string | null
+  status: $Enums.RecordStatus | null
+  version: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -34,6 +47,9 @@ export type WatchlistSymbolMinAggregateOutputType = {
 export type WatchlistSymbolMaxAggregateOutputType = {
   id: string | null
   symbol: string | null
+  tradingSymbolId: string | null
+  status: $Enums.RecordStatus | null
+  version: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -41,15 +57,29 @@ export type WatchlistSymbolMaxAggregateOutputType = {
 export type WatchlistSymbolCountAggregateOutputType = {
   id: number
   symbol: number
+  tradingSymbolId: number
+  status: number
+  version: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
+export type WatchlistSymbolAvgAggregateInputType = {
+  version?: true
+}
+
+export type WatchlistSymbolSumAggregateInputType = {
+  version?: true
+}
+
 export type WatchlistSymbolMinAggregateInputType = {
   id?: true
   symbol?: true
+  tradingSymbolId?: true
+  status?: true
+  version?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -57,6 +87,9 @@ export type WatchlistSymbolMinAggregateInputType = {
 export type WatchlistSymbolMaxAggregateInputType = {
   id?: true
   symbol?: true
+  tradingSymbolId?: true
+  status?: true
+  version?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -64,6 +97,9 @@ export type WatchlistSymbolMaxAggregateInputType = {
 export type WatchlistSymbolCountAggregateInputType = {
   id?: true
   symbol?: true
+  tradingSymbolId?: true
+  status?: true
+  version?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -107,6 +143,18 @@ export type WatchlistSymbolAggregateArgs<ExtArgs extends runtime.Types.Extension
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: WatchlistSymbolAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: WatchlistSymbolSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: WatchlistSymbolMinAggregateInputType
@@ -137,6 +185,8 @@ export type WatchlistSymbolGroupByArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   _count?: WatchlistSymbolCountAggregateInputType | true
+  _avg?: WatchlistSymbolAvgAggregateInputType
+  _sum?: WatchlistSymbolSumAggregateInputType
   _min?: WatchlistSymbolMinAggregateInputType
   _max?: WatchlistSymbolMaxAggregateInputType
 }
@@ -144,9 +194,14 @@ export type WatchlistSymbolGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 export type WatchlistSymbolGroupByOutputType = {
   id: string
   symbol: string
+  tradingSymbolId: string | null
+  status: $Enums.RecordStatus
+  version: number
   createdAt: Date
   updatedAt: Date
   _count: WatchlistSymbolCountAggregateOutputType | null
+  _avg: WatchlistSymbolAvgAggregateOutputType | null
+  _sum: WatchlistSymbolSumAggregateOutputType | null
   _min: WatchlistSymbolMinAggregateOutputType | null
   _max: WatchlistSymbolMaxAggregateOutputType | null
 }
@@ -172,35 +227,52 @@ export type WatchlistSymbolWhereInput = {
   NOT?: Prisma.WatchlistSymbolWhereInput | Prisma.WatchlistSymbolWhereInput[]
   id?: Prisma.StringFilter<"WatchlistSymbol"> | string
   symbol?: Prisma.StringFilter<"WatchlistSymbol"> | string
+  tradingSymbolId?: Prisma.StringNullableFilter<"WatchlistSymbol"> | string | null
+  status?: Prisma.EnumRecordStatusFilter<"WatchlistSymbol"> | $Enums.RecordStatus
+  version?: Prisma.IntFilter<"WatchlistSymbol"> | number
   createdAt?: Prisma.DateTimeFilter<"WatchlistSymbol"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WatchlistSymbol"> | Date | string
+  tradingSymbol?: Prisma.XOR<Prisma.TradingSymbolNullableScalarRelationFilter, Prisma.TradingSymbolWhereInput> | null
 }
 
 export type WatchlistSymbolOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   symbol?: Prisma.SortOrder
+  tradingSymbolId?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  tradingSymbol?: Prisma.TradingSymbolOrderByWithRelationInput
 }
 
 export type WatchlistSymbolWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   symbol?: string
+  tradingSymbolId?: string
   AND?: Prisma.WatchlistSymbolWhereInput | Prisma.WatchlistSymbolWhereInput[]
   OR?: Prisma.WatchlistSymbolWhereInput[]
   NOT?: Prisma.WatchlistSymbolWhereInput | Prisma.WatchlistSymbolWhereInput[]
+  status?: Prisma.EnumRecordStatusFilter<"WatchlistSymbol"> | $Enums.RecordStatus
+  version?: Prisma.IntFilter<"WatchlistSymbol"> | number
   createdAt?: Prisma.DateTimeFilter<"WatchlistSymbol"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WatchlistSymbol"> | Date | string
-}, "id" | "symbol">
+  tradingSymbol?: Prisma.XOR<Prisma.TradingSymbolNullableScalarRelationFilter, Prisma.TradingSymbolWhereInput> | null
+}, "id" | "symbol" | "tradingSymbolId">
 
 export type WatchlistSymbolOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   symbol?: Prisma.SortOrder
+  tradingSymbolId?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.WatchlistSymbolCountOrderByAggregateInput
+  _avg?: Prisma.WatchlistSymbolAvgOrderByAggregateInput
   _max?: Prisma.WatchlistSymbolMaxOrderByAggregateInput
   _min?: Prisma.WatchlistSymbolMinOrderByAggregateInput
+  _sum?: Prisma.WatchlistSymbolSumOrderByAggregateInput
 }
 
 export type WatchlistSymbolScalarWhereWithAggregatesInput = {
@@ -209,6 +281,9 @@ export type WatchlistSymbolScalarWhereWithAggregatesInput = {
   NOT?: Prisma.WatchlistSymbolScalarWhereWithAggregatesInput | Prisma.WatchlistSymbolScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"WatchlistSymbol"> | string
   symbol?: Prisma.StringWithAggregatesFilter<"WatchlistSymbol"> | string
+  tradingSymbolId?: Prisma.StringNullableWithAggregatesFilter<"WatchlistSymbol"> | string | null
+  status?: Prisma.EnumRecordStatusWithAggregatesFilter<"WatchlistSymbol"> | $Enums.RecordStatus
+  version?: Prisma.IntWithAggregatesFilter<"WatchlistSymbol"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"WatchlistSymbol"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"WatchlistSymbol"> | Date | string
 }
@@ -216,13 +291,19 @@ export type WatchlistSymbolScalarWhereWithAggregatesInput = {
 export type WatchlistSymbolCreateInput = {
   id?: string
   symbol: string
+  status?: $Enums.RecordStatus
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  tradingSymbol?: Prisma.TradingSymbolCreateNestedOneWithoutWatchlistEntryInput
 }
 
 export type WatchlistSymbolUncheckedCreateInput = {
   id?: string
   symbol: string
+  tradingSymbolId?: string | null
+  status?: $Enums.RecordStatus
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -230,13 +311,19 @@ export type WatchlistSymbolUncheckedCreateInput = {
 export type WatchlistSymbolUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   symbol?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tradingSymbol?: Prisma.TradingSymbolUpdateOneWithoutWatchlistEntryNestedInput
 }
 
 export type WatchlistSymbolUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   symbol?: Prisma.StringFieldUpdateOperationsInput | string
+  tradingSymbolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -244,6 +331,9 @@ export type WatchlistSymbolUncheckedUpdateInput = {
 export type WatchlistSymbolCreateManyInput = {
   id?: string
   symbol: string
+  tradingSymbolId?: string | null
+  status?: $Enums.RecordStatus
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -251,6 +341,8 @@ export type WatchlistSymbolCreateManyInput = {
 export type WatchlistSymbolUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   symbol?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -258,6 +350,9 @@ export type WatchlistSymbolUpdateManyMutationInput = {
 export type WatchlistSymbolUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   symbol?: Prisma.StringFieldUpdateOperationsInput | string
+  tradingSymbolId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -265,13 +360,23 @@ export type WatchlistSymbolUncheckedUpdateManyInput = {
 export type WatchlistSymbolCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   symbol?: Prisma.SortOrder
+  tradingSymbolId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type WatchlistSymbolAvgOrderByAggregateInput = {
+  version?: Prisma.SortOrder
 }
 
 export type WatchlistSymbolMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   symbol?: Prisma.SortOrder
+  tradingSymbolId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -279,8 +384,104 @@ export type WatchlistSymbolMaxOrderByAggregateInput = {
 export type WatchlistSymbolMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   symbol?: Prisma.SortOrder
+  tradingSymbolId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type WatchlistSymbolSumOrderByAggregateInput = {
+  version?: Prisma.SortOrder
+}
+
+export type WatchlistSymbolNullableScalarRelationFilter = {
+  is?: Prisma.WatchlistSymbolWhereInput | null
+  isNot?: Prisma.WatchlistSymbolWhereInput | null
+}
+
+export type WatchlistSymbolCreateNestedOneWithoutTradingSymbolInput = {
+  create?: Prisma.XOR<Prisma.WatchlistSymbolCreateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput>
+  connectOrCreate?: Prisma.WatchlistSymbolCreateOrConnectWithoutTradingSymbolInput
+  connect?: Prisma.WatchlistSymbolWhereUniqueInput
+}
+
+export type WatchlistSymbolUncheckedCreateNestedOneWithoutTradingSymbolInput = {
+  create?: Prisma.XOR<Prisma.WatchlistSymbolCreateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput>
+  connectOrCreate?: Prisma.WatchlistSymbolCreateOrConnectWithoutTradingSymbolInput
+  connect?: Prisma.WatchlistSymbolWhereUniqueInput
+}
+
+export type WatchlistSymbolUpdateOneWithoutTradingSymbolNestedInput = {
+  create?: Prisma.XOR<Prisma.WatchlistSymbolCreateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput>
+  connectOrCreate?: Prisma.WatchlistSymbolCreateOrConnectWithoutTradingSymbolInput
+  upsert?: Prisma.WatchlistSymbolUpsertWithoutTradingSymbolInput
+  disconnect?: Prisma.WatchlistSymbolWhereInput | boolean
+  delete?: Prisma.WatchlistSymbolWhereInput | boolean
+  connect?: Prisma.WatchlistSymbolWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WatchlistSymbolUpdateToOneWithWhereWithoutTradingSymbolInput, Prisma.WatchlistSymbolUpdateWithoutTradingSymbolInput>, Prisma.WatchlistSymbolUncheckedUpdateWithoutTradingSymbolInput>
+}
+
+export type WatchlistSymbolUncheckedUpdateOneWithoutTradingSymbolNestedInput = {
+  create?: Prisma.XOR<Prisma.WatchlistSymbolCreateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput>
+  connectOrCreate?: Prisma.WatchlistSymbolCreateOrConnectWithoutTradingSymbolInput
+  upsert?: Prisma.WatchlistSymbolUpsertWithoutTradingSymbolInput
+  disconnect?: Prisma.WatchlistSymbolWhereInput | boolean
+  delete?: Prisma.WatchlistSymbolWhereInput | boolean
+  connect?: Prisma.WatchlistSymbolWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WatchlistSymbolUpdateToOneWithWhereWithoutTradingSymbolInput, Prisma.WatchlistSymbolUpdateWithoutTradingSymbolInput>, Prisma.WatchlistSymbolUncheckedUpdateWithoutTradingSymbolInput>
+}
+
+export type WatchlistSymbolCreateWithoutTradingSymbolInput = {
+  id?: string
+  symbol: string
+  status?: $Enums.RecordStatus
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput = {
+  id?: string
+  symbol: string
+  status?: $Enums.RecordStatus
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type WatchlistSymbolCreateOrConnectWithoutTradingSymbolInput = {
+  where: Prisma.WatchlistSymbolWhereUniqueInput
+  create: Prisma.XOR<Prisma.WatchlistSymbolCreateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput>
+}
+
+export type WatchlistSymbolUpsertWithoutTradingSymbolInput = {
+  update: Prisma.XOR<Prisma.WatchlistSymbolUpdateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedUpdateWithoutTradingSymbolInput>
+  create: Prisma.XOR<Prisma.WatchlistSymbolCreateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedCreateWithoutTradingSymbolInput>
+  where?: Prisma.WatchlistSymbolWhereInput
+}
+
+export type WatchlistSymbolUpdateToOneWithWhereWithoutTradingSymbolInput = {
+  where?: Prisma.WatchlistSymbolWhereInput
+  data: Prisma.XOR<Prisma.WatchlistSymbolUpdateWithoutTradingSymbolInput, Prisma.WatchlistSymbolUncheckedUpdateWithoutTradingSymbolInput>
+}
+
+export type WatchlistSymbolUpdateWithoutTradingSymbolInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  symbol?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type WatchlistSymbolUncheckedUpdateWithoutTradingSymbolInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  symbol?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumRecordStatusFieldUpdateOperationsInput | $Enums.RecordStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -288,39 +489,68 @@ export type WatchlistSymbolMinOrderByAggregateInput = {
 export type WatchlistSymbolSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   symbol?: boolean
+  tradingSymbolId?: boolean
+  status?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tradingSymbol?: boolean | Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>
 }, ExtArgs["result"]["watchlistSymbol"]>
 
 export type WatchlistSymbolSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   symbol?: boolean
+  tradingSymbolId?: boolean
+  status?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tradingSymbol?: boolean | Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>
 }, ExtArgs["result"]["watchlistSymbol"]>
 
 export type WatchlistSymbolSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   symbol?: boolean
+  tradingSymbolId?: boolean
+  status?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  tradingSymbol?: boolean | Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>
 }, ExtArgs["result"]["watchlistSymbol"]>
 
 export type WatchlistSymbolSelectScalar = {
   id?: boolean
   symbol?: boolean
+  tradingSymbolId?: boolean
+  status?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WatchlistSymbolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "symbol" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistSymbol"]>
+export type WatchlistSymbolOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "symbol" | "tradingSymbolId" | "status" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistSymbol"]>
+export type WatchlistSymbolInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tradingSymbol?: boolean | Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>
+}
+export type WatchlistSymbolIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tradingSymbol?: boolean | Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>
+}
+export type WatchlistSymbolIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tradingSymbol?: boolean | Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>
+}
 
 export type $WatchlistSymbolPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "WatchlistSymbol"
-  objects: {}
+  objects: {
+    tradingSymbol: Prisma.$TradingSymbolPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     symbol: string
+    tradingSymbolId: string | null
+    status: $Enums.RecordStatus
+    version: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["watchlistSymbol"]>
@@ -717,6 +947,7 @@ readonly fields: WatchlistSymbolFieldRefs;
  */
 export interface Prisma__WatchlistSymbolClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  tradingSymbol<T extends Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WatchlistSymbol$tradingSymbolArgs<ExtArgs>>): Prisma.Prisma__TradingSymbolClient<runtime.Types.Result.GetResult<Prisma.$TradingSymbolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -748,6 +979,9 @@ export interface Prisma__WatchlistSymbolClient<T, Null = never, ExtArgs extends 
 export interface WatchlistSymbolFieldRefs {
   readonly id: Prisma.FieldRef<"WatchlistSymbol", 'String'>
   readonly symbol: Prisma.FieldRef<"WatchlistSymbol", 'String'>
+  readonly tradingSymbolId: Prisma.FieldRef<"WatchlistSymbol", 'String'>
+  readonly status: Prisma.FieldRef<"WatchlistSymbol", 'RecordStatus'>
+  readonly version: Prisma.FieldRef<"WatchlistSymbol", 'Int'>
   readonly createdAt: Prisma.FieldRef<"WatchlistSymbol", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"WatchlistSymbol", 'DateTime'>
 }
@@ -767,6 +1001,10 @@ export type WatchlistSymbolFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
+  /**
    * Filter, which WatchlistSymbol to fetch.
    */
   where: Prisma.WatchlistSymbolWhereUniqueInput
@@ -785,6 +1023,10 @@ export type WatchlistSymbolFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
+  /**
    * Filter, which WatchlistSymbol to fetch.
    */
   where: Prisma.WatchlistSymbolWhereUniqueInput
@@ -802,6 +1044,10 @@ export type WatchlistSymbolFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the WatchlistSymbol
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
   /**
    * Filter, which WatchlistSymbol to fetch.
    */
@@ -851,6 +1097,10 @@ export type WatchlistSymbolFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
+  /**
    * Filter, which WatchlistSymbol to fetch.
    */
   where?: Prisma.WatchlistSymbolWhereInput
@@ -898,6 +1148,10 @@ export type WatchlistSymbolFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the WatchlistSymbol
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
   /**
    * Filter, which WatchlistSymbols to fetch.
    */
@@ -947,6 +1201,10 @@ export type WatchlistSymbolCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
+  /**
    * The data needed to create a WatchlistSymbol.
    */
   data: Prisma.XOR<Prisma.WatchlistSymbolCreateInput, Prisma.WatchlistSymbolUncheckedCreateInput>
@@ -980,6 +1238,10 @@ export type WatchlistSymbolCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    */
   data: Prisma.WatchlistSymbolCreateManyInput | Prisma.WatchlistSymbolCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -994,6 +1256,10 @@ export type WatchlistSymbolUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the WatchlistSymbol
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
   /**
    * The data needed to update a WatchlistSymbol.
    */
@@ -1046,6 +1312,10 @@ export type WatchlistSymbolUpdateManyAndReturnArgs<ExtArgs extends runtime.Types
    * Limit how many WatchlistSymbols to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1060,6 +1330,10 @@ export type WatchlistSymbolUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the WatchlistSymbol
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
   /**
    * The filter to search for the WatchlistSymbol to update in case it exists.
    */
@@ -1087,6 +1361,10 @@ export type WatchlistSymbolDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
+  /**
    * Filter which WatchlistSymbol to delete.
    */
   where: Prisma.WatchlistSymbolWhereUniqueInput
@@ -1107,6 +1385,25 @@ export type WatchlistSymbolDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
+ * WatchlistSymbol.tradingSymbol
+ */
+export type WatchlistSymbol$tradingSymbolArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TradingSymbol
+   */
+  select?: Prisma.TradingSymbolSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TradingSymbol
+   */
+  omit?: Prisma.TradingSymbolOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TradingSymbolInclude<ExtArgs> | null
+  where?: Prisma.TradingSymbolWhereInput
+}
+
+/**
  * WatchlistSymbol without action
  */
 export type WatchlistSymbolDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1118,4 +1415,8 @@ export type WatchlistSymbolDefaultArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the WatchlistSymbol
    */
   omit?: Prisma.WatchlistSymbolOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WatchlistSymbolInclude<ExtArgs> | null
 }

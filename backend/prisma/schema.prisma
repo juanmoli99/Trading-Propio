@@ -230,11 +230,17 @@ model MarketDataHaltEvent {
 }
 
 model WatchlistSymbol {
-  id        String   @id @default(cuid())
-  symbol    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String       @id @default(cuid())
+  symbol          String       @unique
+  tradingSymbolId String?      @unique
+  status          RecordStatus @default(ACTIVE)
+  version         Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
+  tradingSymbol TradingSymbol? @relation(fields: [tradingSymbolId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([status])
   @@index([createdAt])
 }
 
@@ -268,4 +274,68 @@ model CorporateActionAdjustmentHistory {
   @@index([processDate])
   @@index([adjustmentType])
   @@index([recordedAt])
+}
+
+model TradingSymbol {
+  id     String       @id @default(cuid())
+  symbol String       @unique
+  status RecordStatus @default(ACTIVE)
+
+  alpacaAssetId String? @unique
+  assetClass    String?
+  exchange      String?
+  name          String?
+  alpacaStatus  String?
+
+  tradable     Boolean?
+  fractionable Boolean?
+  shortable    Boolean?
+  easyToBorrow Boolean?
+
+  lastValidatedAt DateTime?
+  version         Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  watchlistEntry WatchlistSymbol?
+
+  @@index([status])
+  @@index([assetClass])
+  @@index([exchange])
+  @@index([alpacaStatus])
+  @@index([tradable])
+  @@index([lastValidatedAt])
+  @@index([createdAt])
+}
+
+model SymbolWhitelistEntry {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model SymbolBlacklistEntry {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  reason    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model SymbolTemporaryBlock {
+  id        String   @id @default(cuid())
+  symbol    String   @unique
+  reason    String
+  blockedAt DateTime @default(now())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([createdAt])
 }

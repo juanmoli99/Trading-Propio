@@ -24,12 +24,16 @@ import { PrismaModule } from './database/prisma.module';
 import { HealthModule } from './health/health.module';
 import { MarketDataModule } from './market-data/market-data.module';
 import { RegulatoryRulesModule } from './regulatory/regulatory-rules.module';
+import { SymbolsModule } from './symbols/symbols.module';
+import { WatchlistModule } from './watchlist/watchlist.module';
 
 @Module({
   imports: [
     AppConfigModule,
     PrismaModule,
     RegulatoryRulesModule,
+    SymbolsModule,
+    WatchlistModule,
     AlpacaModule,
     MarketDataModule,
     CorporateActionsModule,

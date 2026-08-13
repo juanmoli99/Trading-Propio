@@ -410,7 +410,11 @@ export const ModelName = {
   MarketDataHaltEvent: 'MarketDataHaltEvent',
   WatchlistSymbol: 'WatchlistSymbol',
   StrategySymbolAssociation: 'StrategySymbolAssociation',
-  CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory'
+  CorporateActionAdjustmentHistory: 'CorporateActionAdjustmentHistory',
+  TradingSymbol: 'TradingSymbol',
+  SymbolWhitelistEntry: 'SymbolWhitelistEntry',
+  SymbolBlacklistEntry: 'SymbolBlacklistEntry',
+  SymbolTemporaryBlock: 'SymbolTemporaryBlock'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory"
+    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory" | "tradingSymbol" | "symbolWhitelistEntry" | "symbolBlacklistEntry" | "symbolTemporaryBlock"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1466,6 +1470,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TradingSymbol: {
+      payload: Prisma.$TradingSymbolPayload<ExtArgs>
+      fields: Prisma.TradingSymbolFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TradingSymbolFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TradingSymbolFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>
+        }
+        findFirst: {
+          args: Prisma.TradingSymbolFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TradingSymbolFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>
+        }
+        findMany: {
+          args: Prisma.TradingSymbolFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>[]
+        }
+        create: {
+          args: Prisma.TradingSymbolCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>
+        }
+        createMany: {
+          args: Prisma.TradingSymbolCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TradingSymbolCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>[]
+        }
+        delete: {
+          args: Prisma.TradingSymbolDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>
+        }
+        update: {
+          args: Prisma.TradingSymbolUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>
+        }
+        deleteMany: {
+          args: Prisma.TradingSymbolDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TradingSymbolUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TradingSymbolUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>[]
+        }
+        upsert: {
+          args: Prisma.TradingSymbolUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TradingSymbolPayload>
+        }
+        aggregate: {
+          args: Prisma.TradingSymbolAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTradingSymbol>
+        }
+        groupBy: {
+          args: Prisma.TradingSymbolGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TradingSymbolGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TradingSymbolCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TradingSymbolCountAggregateOutputType> | number
+        }
+      }
+    }
+    SymbolWhitelistEntry: {
+      payload: Prisma.$SymbolWhitelistEntryPayload<ExtArgs>
+      fields: Prisma.SymbolWhitelistEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SymbolWhitelistEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SymbolWhitelistEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.SymbolWhitelistEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SymbolWhitelistEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>
+        }
+        findMany: {
+          args: Prisma.SymbolWhitelistEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>[]
+        }
+        create: {
+          args: Prisma.SymbolWhitelistEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>
+        }
+        createMany: {
+          args: Prisma.SymbolWhitelistEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SymbolWhitelistEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.SymbolWhitelistEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>
+        }
+        update: {
+          args: Prisma.SymbolWhitelistEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.SymbolWhitelistEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SymbolWhitelistEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SymbolWhitelistEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.SymbolWhitelistEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolWhitelistEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.SymbolWhitelistEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSymbolWhitelistEntry>
+        }
+        groupBy: {
+          args: Prisma.SymbolWhitelistEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SymbolWhitelistEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SymbolWhitelistEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SymbolWhitelistEntryCountAggregateOutputType> | number
+        }
+      }
+    }
+    SymbolBlacklistEntry: {
+      payload: Prisma.$SymbolBlacklistEntryPayload<ExtArgs>
+      fields: Prisma.SymbolBlacklistEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SymbolBlacklistEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SymbolBlacklistEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.SymbolBlacklistEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SymbolBlacklistEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>
+        }
+        findMany: {
+          args: Prisma.SymbolBlacklistEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>[]
+        }
+        create: {
+          args: Prisma.SymbolBlacklistEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>
+        }
+        createMany: {
+          args: Prisma.SymbolBlacklistEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SymbolBlacklistEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.SymbolBlacklistEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>
+        }
+        update: {
+          args: Prisma.SymbolBlacklistEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.SymbolBlacklistEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SymbolBlacklistEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SymbolBlacklistEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.SymbolBlacklistEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolBlacklistEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.SymbolBlacklistEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSymbolBlacklistEntry>
+        }
+        groupBy: {
+          args: Prisma.SymbolBlacklistEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SymbolBlacklistEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SymbolBlacklistEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SymbolBlacklistEntryCountAggregateOutputType> | number
+        }
+      }
+    }
+    SymbolTemporaryBlock: {
+      payload: Prisma.$SymbolTemporaryBlockPayload<ExtArgs>
+      fields: Prisma.SymbolTemporaryBlockFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SymbolTemporaryBlockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SymbolTemporaryBlockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>
+        }
+        findFirst: {
+          args: Prisma.SymbolTemporaryBlockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SymbolTemporaryBlockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>
+        }
+        findMany: {
+          args: Prisma.SymbolTemporaryBlockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>[]
+        }
+        create: {
+          args: Prisma.SymbolTemporaryBlockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>
+        }
+        createMany: {
+          args: Prisma.SymbolTemporaryBlockCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SymbolTemporaryBlockCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>[]
+        }
+        delete: {
+          args: Prisma.SymbolTemporaryBlockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>
+        }
+        update: {
+          args: Prisma.SymbolTemporaryBlockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>
+        }
+        deleteMany: {
+          args: Prisma.SymbolTemporaryBlockDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SymbolTemporaryBlockUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SymbolTemporaryBlockUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>[]
+        }
+        upsert: {
+          args: Prisma.SymbolTemporaryBlockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SymbolTemporaryBlockPayload>
+        }
+        aggregate: {
+          args: Prisma.SymbolTemporaryBlockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSymbolTemporaryBlock>
+        }
+        groupBy: {
+          args: Prisma.SymbolTemporaryBlockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SymbolTemporaryBlockGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SymbolTemporaryBlockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SymbolTemporaryBlockCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1676,6 +1976,9 @@ export type MarketDataHaltEventScalarFieldEnum = (typeof MarketDataHaltEventScal
 export const WatchlistSymbolScalarFieldEnum = {
   id: 'id',
   symbol: 'symbol',
+  tradingSymbolId: 'tradingSymbolId',
+  status: 'status',
+  version: 'version',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1707,6 +2010,62 @@ export const CorporateActionAdjustmentHistoryScalarFieldEnum = {
 } as const
 
 export type CorporateActionAdjustmentHistoryScalarFieldEnum = (typeof CorporateActionAdjustmentHistoryScalarFieldEnum)[keyof typeof CorporateActionAdjustmentHistoryScalarFieldEnum]
+
+
+export const TradingSymbolScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  status: 'status',
+  alpacaAssetId: 'alpacaAssetId',
+  assetClass: 'assetClass',
+  exchange: 'exchange',
+  name: 'name',
+  alpacaStatus: 'alpacaStatus',
+  tradable: 'tradable',
+  fractionable: 'fractionable',
+  shortable: 'shortable',
+  easyToBorrow: 'easyToBorrow',
+  lastValidatedAt: 'lastValidatedAt',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TradingSymbolScalarFieldEnum = (typeof TradingSymbolScalarFieldEnum)[keyof typeof TradingSymbolScalarFieldEnum]
+
+
+export const SymbolWhitelistEntryScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SymbolWhitelistEntryScalarFieldEnum = (typeof SymbolWhitelistEntryScalarFieldEnum)[keyof typeof SymbolWhitelistEntryScalarFieldEnum]
+
+
+export const SymbolBlacklistEntryScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  reason: 'reason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SymbolBlacklistEntryScalarFieldEnum = (typeof SymbolBlacklistEntryScalarFieldEnum)[keyof typeof SymbolBlacklistEntryScalarFieldEnum]
+
+
+export const SymbolTemporaryBlockScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  reason: 'reason',
+  blockedAt: 'blockedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SymbolTemporaryBlockScalarFieldEnum = (typeof SymbolTemporaryBlockScalarFieldEnum)[keyof typeof SymbolTemporaryBlockScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2102,6 +2461,10 @@ export type GlobalOmitConfig = {
   watchlistSymbol?: Prisma.WatchlistSymbolOmit
   strategySymbolAssociation?: Prisma.StrategySymbolAssociationOmit
   corporateActionAdjustmentHistory?: Prisma.CorporateActionAdjustmentHistoryOmit
+  tradingSymbol?: Prisma.TradingSymbolOmit
+  symbolWhitelistEntry?: Prisma.SymbolWhitelistEntryOmit
+  symbolBlacklistEntry?: Prisma.SymbolBlacklistEntryOmit
+  symbolTemporaryBlock?: Prisma.SymbolTemporaryBlockOmit
 }
 
 /* Types for Logging */
