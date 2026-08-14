@@ -134,3 +134,18 @@ export type SymbolTemporaryBlock = Prisma.SymbolTemporaryBlockModel
  * 
  */
 export type StrategyMarketEventPolicyHistory = Prisma.StrategyMarketEventPolicyHistoryModel
+/**
+ * Model StrategyActivationState
+ * 
+ */
+export type StrategyActivationState = Prisma.StrategyActivationStateModel
+/**
+ * Model StrategySignalRecord
+ * 
+ */
+export type StrategySignalRecord = Prisma.StrategySignalRecordModel
+/**
+ * Model StrategySymbolOverrideState
+ * 
+ */
+export type StrategySymbolOverrideState = Prisma.StrategySymbolOverrideStateModel

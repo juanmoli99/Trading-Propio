@@ -69,7 +69,10 @@ export const ModelName = {
   SymbolWhitelistEntry: 'SymbolWhitelistEntry',
   SymbolBlacklistEntry: 'SymbolBlacklistEntry',
   SymbolTemporaryBlock: 'SymbolTemporaryBlock',
-  StrategyMarketEventPolicyHistory: 'StrategyMarketEventPolicyHistory'
+  StrategyMarketEventPolicyHistory: 'StrategyMarketEventPolicyHistory',
+  StrategyActivationState: 'StrategyActivationState',
+  StrategySignalRecord: 'StrategySignalRecord',
+  StrategySymbolOverrideState: 'StrategySymbolOverrideState'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -371,6 +374,54 @@ export const StrategyMarketEventPolicyHistoryScalarFieldEnum = {
 } as const
 
 export type StrategyMarketEventPolicyHistoryScalarFieldEnum = (typeof StrategyMarketEventPolicyHistoryScalarFieldEnum)[keyof typeof StrategyMarketEventPolicyHistoryScalarFieldEnum]
+
+
+export const StrategyActivationStateScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  strategyVersion: 'strategyVersion',
+  enabled: 'enabled',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StrategyActivationStateScalarFieldEnum = (typeof StrategyActivationStateScalarFieldEnum)[keyof typeof StrategyActivationStateScalarFieldEnum]
+
+
+export const StrategySignalRecordScalarFieldEnum = {
+  id: 'id',
+  signalId: 'signalId',
+  signalAt: 'signalAt',
+  expiresAt: 'expiresAt',
+  strategyId: 'strategyId',
+  strategyVersion: 'strategyVersion',
+  symbol: 'symbol',
+  action: 'action',
+  evaluatedAt: 'evaluatedAt',
+  confidence: 'confidence',
+  reason: 'reason',
+  configurationSnapshot: 'configurationSnapshot',
+  invalidatedAt: 'invalidatedAt',
+  invalidationReason: 'invalidationReason',
+  createdAt: 'createdAt'
+} as const
+
+export type StrategySignalRecordScalarFieldEnum = (typeof StrategySignalRecordScalarFieldEnum)[keyof typeof StrategySignalRecordScalarFieldEnum]
+
+
+export const StrategySymbolOverrideStateScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  strategyVersion: 'strategyVersion',
+  symbol: 'symbol',
+  parameters: 'parameters',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StrategySymbolOverrideStateScalarFieldEnum = (typeof StrategySymbolOverrideStateScalarFieldEnum)[keyof typeof StrategySymbolOverrideStateScalarFieldEnum]
 
 
 export const SortOrder = {

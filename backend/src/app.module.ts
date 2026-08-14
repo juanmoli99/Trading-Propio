@@ -26,6 +26,7 @@ import { IndicatorsModule } from './indicators/indicators.module';
 import { MarketDataModule } from './market-data/market-data.module';
 import { MarketEventsModule } from './market-events/market-events.module';
 import { RegulatoryRulesModule } from './regulatory/regulatory-rules.module';
+import { StrategiesModule } from './strategies/strategies.module';
 import { SymbolsModule } from './symbols/symbols.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
 
@@ -34,6 +35,7 @@ import { WatchlistModule } from './watchlist/watchlist.module';
     AppConfigModule,
     PrismaModule,
     RegulatoryRulesModule,
+    StrategiesModule,
     SymbolsModule,
     WatchlistModule,
     AlpacaModule,
@@ -91,3 +93,4 @@ export class AppModule implements NestModule {
       .forRoutes('*');
   }
 }
+

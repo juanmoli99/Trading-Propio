@@ -415,7 +415,10 @@ export const ModelName = {
   SymbolWhitelistEntry: 'SymbolWhitelistEntry',
   SymbolBlacklistEntry: 'SymbolBlacklistEntry',
   SymbolTemporaryBlock: 'SymbolTemporaryBlock',
-  StrategyMarketEventPolicyHistory: 'StrategyMarketEventPolicyHistory'
+  StrategyMarketEventPolicyHistory: 'StrategyMarketEventPolicyHistory',
+  StrategyActivationState: 'StrategyActivationState',
+  StrategySignalRecord: 'StrategySignalRecord',
+  StrategySymbolOverrideState: 'StrategySymbolOverrideState'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -431,7 +434,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory" | "tradingSymbol" | "symbolWhitelistEntry" | "symbolBlacklistEntry" | "symbolTemporaryBlock" | "strategyMarketEventPolicyHistory"
+    modelProps: "systemMetadata" | "systemMetadataRevision" | "financialConstraintProbe" | "persistentLock" | "singleOperator" | "authSession" | "auditEvent" | "platformAlpacaOrder" | "alpacaAccountRestrictionSnapshot" | "marketDataAnomaly" | "marketDataHaltEvent" | "watchlistSymbol" | "strategySymbolAssociation" | "corporateActionAdjustmentHistory" | "tradingSymbol" | "symbolWhitelistEntry" | "symbolBlacklistEntry" | "symbolTemporaryBlock" | "strategyMarketEventPolicyHistory" | "strategyActivationState" | "strategySignalRecord" | "strategySymbolOverrideState"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1841,6 +1844,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StrategyActivationState: {
+      payload: Prisma.$StrategyActivationStatePayload<ExtArgs>
+      fields: Prisma.StrategyActivationStateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StrategyActivationStateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StrategyActivationStateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>
+        }
+        findFirst: {
+          args: Prisma.StrategyActivationStateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StrategyActivationStateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>
+        }
+        findMany: {
+          args: Prisma.StrategyActivationStateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>[]
+        }
+        create: {
+          args: Prisma.StrategyActivationStateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>
+        }
+        createMany: {
+          args: Prisma.StrategyActivationStateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StrategyActivationStateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>[]
+        }
+        delete: {
+          args: Prisma.StrategyActivationStateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>
+        }
+        update: {
+          args: Prisma.StrategyActivationStateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>
+        }
+        deleteMany: {
+          args: Prisma.StrategyActivationStateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StrategyActivationStateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StrategyActivationStateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>[]
+        }
+        upsert: {
+          args: Prisma.StrategyActivationStateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategyActivationStatePayload>
+        }
+        aggregate: {
+          args: Prisma.StrategyActivationStateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStrategyActivationState>
+        }
+        groupBy: {
+          args: Prisma.StrategyActivationStateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategyActivationStateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StrategyActivationStateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategyActivationStateCountAggregateOutputType> | number
+        }
+      }
+    }
+    StrategySignalRecord: {
+      payload: Prisma.$StrategySignalRecordPayload<ExtArgs>
+      fields: Prisma.StrategySignalRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StrategySignalRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StrategySignalRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.StrategySignalRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StrategySignalRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>
+        }
+        findMany: {
+          args: Prisma.StrategySignalRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>[]
+        }
+        create: {
+          args: Prisma.StrategySignalRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>
+        }
+        createMany: {
+          args: Prisma.StrategySignalRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StrategySignalRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.StrategySignalRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>
+        }
+        update: {
+          args: Prisma.StrategySignalRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.StrategySignalRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StrategySignalRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StrategySignalRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.StrategySignalRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySignalRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.StrategySignalRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStrategySignalRecord>
+        }
+        groupBy: {
+          args: Prisma.StrategySignalRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategySignalRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StrategySignalRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategySignalRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    StrategySymbolOverrideState: {
+      payload: Prisma.$StrategySymbolOverrideStatePayload<ExtArgs>
+      fields: Prisma.StrategySymbolOverrideStateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StrategySymbolOverrideStateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StrategySymbolOverrideStateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>
+        }
+        findFirst: {
+          args: Prisma.StrategySymbolOverrideStateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StrategySymbolOverrideStateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>
+        }
+        findMany: {
+          args: Prisma.StrategySymbolOverrideStateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>[]
+        }
+        create: {
+          args: Prisma.StrategySymbolOverrideStateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>
+        }
+        createMany: {
+          args: Prisma.StrategySymbolOverrideStateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StrategySymbolOverrideStateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>[]
+        }
+        delete: {
+          args: Prisma.StrategySymbolOverrideStateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>
+        }
+        update: {
+          args: Prisma.StrategySymbolOverrideStateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>
+        }
+        deleteMany: {
+          args: Prisma.StrategySymbolOverrideStateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StrategySymbolOverrideStateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StrategySymbolOverrideStateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>[]
+        }
+        upsert: {
+          args: Prisma.StrategySymbolOverrideStateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StrategySymbolOverrideStatePayload>
+        }
+        aggregate: {
+          args: Prisma.StrategySymbolOverrideStateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStrategySymbolOverrideState>
+        }
+        groupBy: {
+          args: Prisma.StrategySymbolOverrideStateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategySymbolOverrideStateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StrategySymbolOverrideStateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StrategySymbolOverrideStateCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2163,6 +2388,54 @@ export const StrategyMarketEventPolicyHistoryScalarFieldEnum = {
 } as const
 
 export type StrategyMarketEventPolicyHistoryScalarFieldEnum = (typeof StrategyMarketEventPolicyHistoryScalarFieldEnum)[keyof typeof StrategyMarketEventPolicyHistoryScalarFieldEnum]
+
+
+export const StrategyActivationStateScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  strategyVersion: 'strategyVersion',
+  enabled: 'enabled',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StrategyActivationStateScalarFieldEnum = (typeof StrategyActivationStateScalarFieldEnum)[keyof typeof StrategyActivationStateScalarFieldEnum]
+
+
+export const StrategySignalRecordScalarFieldEnum = {
+  id: 'id',
+  signalId: 'signalId',
+  signalAt: 'signalAt',
+  expiresAt: 'expiresAt',
+  strategyId: 'strategyId',
+  strategyVersion: 'strategyVersion',
+  symbol: 'symbol',
+  action: 'action',
+  evaluatedAt: 'evaluatedAt',
+  confidence: 'confidence',
+  reason: 'reason',
+  configurationSnapshot: 'configurationSnapshot',
+  invalidatedAt: 'invalidatedAt',
+  invalidationReason: 'invalidationReason',
+  createdAt: 'createdAt'
+} as const
+
+export type StrategySignalRecordScalarFieldEnum = (typeof StrategySignalRecordScalarFieldEnum)[keyof typeof StrategySignalRecordScalarFieldEnum]
+
+
+export const StrategySymbolOverrideStateScalarFieldEnum = {
+  id: 'id',
+  strategyId: 'strategyId',
+  strategyVersion: 'strategyVersion',
+  symbol: 'symbol',
+  parameters: 'parameters',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StrategySymbolOverrideStateScalarFieldEnum = (typeof StrategySymbolOverrideStateScalarFieldEnum)[keyof typeof StrategySymbolOverrideStateScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2591,6 +2864,9 @@ export type GlobalOmitConfig = {
   symbolBlacklistEntry?: Prisma.SymbolBlacklistEntryOmit
   symbolTemporaryBlock?: Prisma.SymbolTemporaryBlockOmit
   strategyMarketEventPolicyHistory?: Prisma.StrategyMarketEventPolicyHistoryOmit
+  strategyActivationState?: Prisma.StrategyActivationStateOmit
+  strategySignalRecord?: Prisma.StrategySignalRecordOmit
+  strategySymbolOverrideState?: Prisma.StrategySymbolOverrideStateOmit
 }
 
 /* Types for Logging */

@@ -389,3 +389,66 @@ model StrategyMarketEventPolicyHistory {
   @@index([strategyId, evaluatedAt])
   @@index([symbol, evaluatedAt])
 }
+
+model StrategyActivationState {
+  id              String   @id @default(cuid())
+  strategyId      String
+  strategyVersion String
+  enabled         Boolean  @default(true)
+  version         Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([strategyId, strategyVersion])
+  @@index([strategyId])
+  @@index([strategyVersion])
+  @@index([enabled])
+  @@index([updatedAt])
+}
+
+model StrategySignalRecord {
+  id                    String    @id @default(cuid())
+  signalId              String    @unique
+  signalAt              DateTime
+  expiresAt             DateTime
+  strategyId            String
+  strategyVersion       String
+  symbol                String
+  action                String
+  evaluatedAt           DateTime
+  confidence            Decimal   @db.Decimal(10, 8)
+  reason                String
+  configurationSnapshot Json      @default("{}")
+  invalidatedAt         DateTime?
+  invalidationReason    String?
+  createdAt             DateTime  @default(now())
+
+  @@unique([strategyId, strategyVersion, symbol, action, evaluatedAt])
+  @@index([strategyId])
+  @@index([strategyVersion])
+  @@index([symbol])
+  @@index([action])
+  @@index([signalAt])
+  @@index([expiresAt])
+  @@index([evaluatedAt])
+  @@index([strategyId, symbol])
+  @@index([strategyId, evaluatedAt])
+  @@index([symbol, evaluatedAt])
+}
+
+model StrategySymbolOverrideState {
+  id              String   @id @default(cuid())
+  strategyId      String
+  strategyVersion String
+  symbol          String
+  parameters      Json
+  version         Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([strategyId, strategyVersion, symbol])
+  @@index([strategyId])
+  @@index([strategyVersion])
+  @@index([symbol])
+  @@index([updatedAt])
+}
