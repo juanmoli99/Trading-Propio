@@ -1,4 +1,4 @@
-import type { StrategySignalCooldownSeconds } from './signal-cooldown';
+﻿import type { StrategySignalCooldownSeconds } from './signal-cooldown';
 import type { StrategyMaxSignalsPerMinute } from './signal-frequency';
 import type { StrategySignalInvalidation } from './signal-invalidation';
 import type { StrategyMaxSignals } from './signal-total-limit';
@@ -79,18 +79,6 @@ export {
 export interface StrategyEvaluationContext {
   readonly symbol: string;
   readonly evaluatedAt: Date;
-
-  /*
-   * El caller externo no controla estos parámetros.
-   *
-   * StrategyRunnerService siempre resuelve y entrega aquí la configuración
-   * efectiva de la estrategia:
-   *
-   *   strategy.parameters + override específico del símbolo.
-   *
-   * Se mantiene opcional únicamente por compatibilidad con consumidores
-   * históricos que invocan strategy.evaluate() directamente.
-   */
   readonly parameters?: StrategyParameters;
 }
 

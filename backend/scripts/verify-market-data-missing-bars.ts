@@ -1,4 +1,4 @@
-import { detectMissingMarketDataBars } from '../src/market-data/market-data-missing-bars';
+﻿import { detectMissingMarketDataBars } from '../src/market-data/market-data-missing-bars';
 import type { AlpacaCalendarDay } from '../src/alpaca/alpaca-calendar.types';
 import type { MarketDataBar } from '../src/market-data/market-data.types';
 

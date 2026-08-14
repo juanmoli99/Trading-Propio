@@ -1,4 +1,4 @@
-import {
+﻿import {
   DEFAULT_SIGNAL_VALIDITY_SECONDS,
   MAX_SIGNAL_VALIDITY_SECONDS,
   MIN_SIGNAL_VALIDITY_SECONDS,
@@ -239,3 +239,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

@@ -1,4 +1,4 @@
-import { CorporateActionSpinOffService } from '../src/corporate-actions/corporate-action-spin-off.service';
+﻿import { CorporateActionSpinOffService } from '../src/corporate-actions/corporate-action-spin-off.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {
@@ -203,7 +203,7 @@ async function main(): Promise<void> {
 
   if (failed.length > 0) {
     throw new Error(
-      `PUNTO 175 FALLÓ: ${failed.join(', ')}`,
+      `PUNTO 175 FALLÃ“: ${failed.join(', ')}`,
     );
   }
 

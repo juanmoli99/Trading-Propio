@@ -1,4 +1,4 @@
-import { AdxService } from '../src/indicators/adx.service';
+﻿import { AdxService } from '../src/indicators/adx.service';
 import type { MarketDataBar } from '../src/market-data/market-data.types';
 
 function check(name: string, condition: boolean): void {
@@ -320,3 +320,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

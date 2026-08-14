@@ -1,4 +1,4 @@
-import { ConfigService } from '@nestjs/config';
+﻿import { ConfigService } from '@nestjs/config';
 import type { AlpacaSubmitOrderRequest } from '../src/alpaca/alpaca-submit-order.types';
 import { AlpacaSubmitOrderService } from '../src/alpaca/alpaca-submit-order.service';
 import { MarketDataHaltDetectionService } from '../src/market-data/market-data-halt-detection.service';
@@ -168,7 +168,7 @@ async function main(): Promise<void> {
   }
 
   if (!Object.values(assertions).every(Boolean)) {
-    console.error('PUNTO 161 FALLÓ.');
+    console.error('PUNTO 161 FALLÃ“.');
     process.exit(1);
   }
 

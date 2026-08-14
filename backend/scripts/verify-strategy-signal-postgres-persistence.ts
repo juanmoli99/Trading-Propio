@@ -1,4 +1,4 @@
-import { ConfigService } from '@nestjs/config';
+﻿import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../src/database/prisma.service';
 import { PrismaStrategySignalRepository } from '../src/strategies/prisma-strategy-signal.repository';
@@ -53,6 +53,7 @@ async function main(): Promise<void> {
     evaluatedAt: sourceEvaluatedAt,
     confidence: 0.875,
     reason: 'PostgreSQL persistence verification',
+    configurationSnapshot: {},
   };
 
   try {
@@ -243,3 +244,5 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

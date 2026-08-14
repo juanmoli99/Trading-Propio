@@ -1,4 +1,4 @@
-import { SymbolDollarVolumeFilterService } from '../src/watchlist/symbol-dollar-volume-filter.service';
+﻿import { SymbolDollarVolumeFilterService } from '../src/watchlist/symbol-dollar-volume-filter.service';
 import { SymbolLiquidityFilterService } from '../src/watchlist/symbol-liquidity-filter.service';
 import { SymbolVolumeFilterService } from '../src/watchlist/symbol-volume-filter.service';
 
@@ -270,3 +270,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

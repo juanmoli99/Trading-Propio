@@ -1,4 +1,4 @@
-import type { ConfigService } from '@nestjs/config';
+﻿import type { ConfigService } from '@nestjs/config';
 import { EarningsOvernightPolicyService } from '../src/market-events/earnings-overnight-policy.service';
 import { EarningsTimeRemainingService } from '../src/market-events/earnings-time-remaining.service';
 import type { EarningsCalendarEvent } from '../src/market-events/earnings-calendar.types';
@@ -291,3 +291,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

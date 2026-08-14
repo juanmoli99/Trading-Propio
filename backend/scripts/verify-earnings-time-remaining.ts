@@ -1,4 +1,4 @@
-import { EarningsTimeRemainingService } from '../src/market-events/earnings-time-remaining.service';
+﻿import { EarningsTimeRemainingService } from '../src/market-events/earnings-time-remaining.service';
 import type { EarningsCalendarEvent } from '../src/market-events/earnings-calendar.types';
 
 function check(name: string, condition: boolean): void {
@@ -275,3 +275,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

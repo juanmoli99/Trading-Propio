@@ -1,4 +1,4 @@
-import { OperationalStateService } from '../src/common/operational-state/operational-state.service';
+﻿import { OperationalStateService } from '../src/common/operational-state/operational-state.service';
 import { MarketDataHealthService } from '../src/market-data/market-data-health.service';
 
 const operationalState = new OperationalStateService();
@@ -70,7 +70,7 @@ for (const [name, passed] of Object.entries(assertions)) {
 }
 
 if (!Object.values(assertions).every(Boolean)) {
-  console.error('PUNTO 151 FALLÓ.');
+  console.error('PUNTO 151 FALLÃ“.');
   process.exit(1);
 }
 

@@ -1,6 +1,7 @@
-import type { StrategySignalInvalidation } from './signal-invalidation';
+﻿import type { StrategySignalInvalidation } from './signal-invalidation';
 import type { StrategySignalConfidence } from './signal-confidence';
 import type { StrategySignalReason } from './signal-reason';
+import type { StrategyParameters } from './strategy-parameters.types';
 
 export {
   MAX_STRATEGY_SIGNAL_CONFIDENCE,
@@ -15,9 +16,15 @@ export {
   type StrategySignalReason,
 } from './signal-reason';
 
-export const STRATEGY_SIGNAL_ACTIONS = ['BUY', 'SELL', 'HOLD', 'EXIT'] as const;
+export const STRATEGY_SIGNAL_ACTIONS = [
+  'BUY',
+  'SELL',
+  'HOLD',
+  'EXIT',
+] as const;
 
-export type StrategySignalAction = (typeof STRATEGY_SIGNAL_ACTIONS)[number];
+export type StrategySignalAction =
+  (typeof STRATEGY_SIGNAL_ACTIONS)[number];
 
 export interface StrategySignalCandidate {
   readonly strategyId: string;
@@ -28,10 +35,14 @@ export interface StrategySignalCandidate {
   readonly reason: StrategySignalReason;
 }
 
-export interface StrategySignal extends StrategySignalCandidate {
+export interface StrategySignal
+  extends StrategySignalCandidate {
   readonly signalId: string;
   readonly signalAt: Date;
   readonly expiresAt: Date;
   readonly strategyVersion: string;
+
+  readonly configurationSnapshot: StrategyParameters;
+
   readonly invalidation: StrategySignalInvalidation | null;
 }

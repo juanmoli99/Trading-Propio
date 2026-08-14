@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { PersistentLockService } from '../src/database/locks/persistent-lock.service';
@@ -89,11 +89,11 @@ async function main(): Promise<void> {
   try {
     /*
      * ESCENARIO 1:
-     * Dos seÃƒÂ±ales nuevas concurrentes para la misma identidad.
+     * Dos seÃƒÆ’Ã‚Â±ales nuevas concurrentes para la misma identidad.
      *
      * Ambas tienen distinto evaluatedAt, por lo que NO son duplicados del
-     * punto 257. El lock debe permitir que solo una entre en la secciÃƒÂ³n
-     * crÃƒÂ­tica.
+     * punto 257. El lock debe permitir que solo una entre en la secciÃƒÆ’Ã‚Â³n
+     * crÃƒÆ’Ã‚Â­tica.
      */
     const concurrentStrategy = createStrategy(concurrencyStrategyId);
 
@@ -164,9 +164,9 @@ async function main(): Promise<void> {
 
     /*
      * ESCENARIO 2:
-     * Una primera seÃƒÂ±al entra normalmente.
-     * Una segunda seÃƒÂ±al distinta se intenta inmediatamente despuÃƒÂ©s.
-     * Debe rechazarse por cooldown, no por deduplicaciÃƒÂ³n.
+     * Una primera seÃƒÆ’Ã‚Â±al entra normalmente.
+     * Una segunda seÃƒÆ’Ã‚Â±al distinta se intenta inmediatamente despuÃƒÆ’Ã‚Â©s.
+     * Debe rechazarse por cooldown, no por deduplicaciÃƒÆ’Ã‚Â³n.
      */
     const sequentialStrategy = createStrategy(sequentialStrategyId);
 
@@ -224,7 +224,7 @@ async function main(): Promise<void> {
     /*
      * ESCENARIO 3:
      * Un duplicado exacto del punto 257 no debe ser tratado como una nueva
-     * seÃƒÂ±al bloqueada. Debe devolverse la seÃƒÂ±al canÃƒÂ³nica existente.
+     * seÃƒÆ’Ã‚Â±al bloqueada. Debe devolverse la seÃƒÆ’Ã‚Â±al canÃƒÆ’Ã‚Â³nica existente.
      */
     const duplicateStrategy = createStrategy(duplicateStrategyId);
 
@@ -277,7 +277,7 @@ async function main(): Promise<void> {
     check('DUPLICATE_COOLDOWN_LOCK_RELEASED', duplicateLocks === 0);
 
     /*
-     * VerificaciÃƒÂ³n global de residuos de locks.
+     * VerificaciÃƒÆ’Ã‚Â³n global de residuos de locks.
      */
     const remainingTestLocks = await prisma.persistentLock.count({
       where: {
@@ -365,3 +365,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

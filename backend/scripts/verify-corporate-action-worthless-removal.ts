@@ -1,4 +1,4 @@
-import { CorporateActionWorthlessRemovalService } from '../src/corporate-actions/corporate-action-worthless-removal.service';
+﻿import { CorporateActionWorthlessRemovalService } from '../src/corporate-actions/corporate-action-worthless-removal.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {
@@ -193,3 +193,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

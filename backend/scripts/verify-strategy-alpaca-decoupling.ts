@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+﻿import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { extname, join, relative, resolve } from 'node:path';
 
 const STRATEGIES_DIRECTORY = resolve(process.cwd(), 'src', 'strategies');
@@ -121,3 +121,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

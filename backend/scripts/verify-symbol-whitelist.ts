@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/database/prisma.service';
 import { SymbolWhitelistService } from '../src/watchlist/symbol-whitelist.service';
@@ -245,3 +245,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

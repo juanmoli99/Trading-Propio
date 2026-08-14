@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { PersistentLockService } from '../src/database/locks/persistent-lock.service';
@@ -37,6 +37,7 @@ function createSignal(
     evaluatedAt: new Date('2026-08-13T22:30:00.000Z'),
     confidence: 0.8,
     reason: 'Deduplication verification',
+    configurationSnapshot: {},
     invalidation: null,
     ...overrides,
   };
@@ -434,3 +435,6 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+
+

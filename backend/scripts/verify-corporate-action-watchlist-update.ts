@@ -1,4 +1,4 @@
-import { CorporateActionWatchlistUpdateService } from '../src/corporate-actions/corporate-action-watchlist-update.service';
+﻿import { CorporateActionWatchlistUpdateService } from '../src/corporate-actions/corporate-action-watchlist-update.service';
 import type { CorporateActionEffectiveService } from '../src/corporate-actions/corporate-action-effective.service';
 import type { PrismaService } from '../src/database/prisma.service';
 

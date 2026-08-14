@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+﻿import { randomUUID } from 'node:crypto';
 import {
   cloneStrategySignalInvalidation,
   type StrategySignalInvalidation,
@@ -198,6 +198,7 @@ async function main(): Promise<void> {
     evaluatedAt: new Date('2026-08-13T17:59:59.000Z'),
     confidence: 0.8,
     reason: 'Invalidation persistence verification',
+    configurationSnapshot: {},
     invalidation: null,
   };
 
@@ -356,3 +357,5 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

@@ -1,4 +1,4 @@
-import { CorporateActionMergerService } from '../src/corporate-actions/corporate-action-merger.service';
+﻿import { CorporateActionMergerService } from '../src/corporate-actions/corporate-action-merger.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {
@@ -252,7 +252,7 @@ async function main(): Promise<void> {
 
   if (failed.length > 0) {
     throw new Error(
-      `PUNTO 174 FALLÃ“: ${failed.join(', ')}`,
+      `PUNTO 174 FALLÃƒâ€œ: ${failed.join(', ')}`,
     );
   }
 

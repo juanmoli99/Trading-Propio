@@ -1,4 +1,4 @@
-import { VwapService } from '../src/indicators/vwap.service';
+﻿import { VwapService } from '../src/indicators/vwap.service';
 import type { MarketDataBar } from '../src/market-data/market-data.types';
 
 function check(name: string, condition: boolean): void {
@@ -255,3 +255,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

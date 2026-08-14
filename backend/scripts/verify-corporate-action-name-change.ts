@@ -1,4 +1,4 @@
-import { CorporateActionNameChangeService } from '../src/corporate-actions/corporate-action-name-change.service';
+﻿import { CorporateActionNameChangeService } from '../src/corporate-actions/corporate-action-name-change.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {
@@ -266,7 +266,7 @@ async function main(): Promise<void> {
 
   if (failed.length > 0) {
     throw new Error(
-      `PUNTO 173 FALLÓ: ${failed.join(', ')}`,
+      `PUNTO 173 FALLÃ“: ${failed.join(', ')}`,
     );
   }
 

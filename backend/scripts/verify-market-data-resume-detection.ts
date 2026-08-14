@@ -144,3 +144,4 @@ if (!Object.values(assertions).every(Boolean)) {
 }
 
 console.log('PUNTO 159 VERIFICADO CORRECTAMENTE.');
+

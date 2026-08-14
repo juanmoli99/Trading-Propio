@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+﻿import { Inject, Injectable } from '@nestjs/common';
 import {
   cloneStrategySignalInvalidation,
   createStrategySignalInvalidation,
@@ -123,6 +123,7 @@ export class StrategySignalPersistenceService {
       evaluatedAt: new Date(signal.evaluatedAt.getTime()),
       confidence: signal.confidence,
       reason: signal.reason,
+      configurationSnapshot: signal.configurationSnapshot,
       invalidation:
         signal.invalidation === null
           ? null
@@ -139,3 +140,4 @@ export class StrategySignalPersistenceService {
     };
   }
 }
+

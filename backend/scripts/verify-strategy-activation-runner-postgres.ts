@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { PersistentLockService } from '../src/database/locks/persistent-lock.service';
@@ -138,7 +138,7 @@ async function main(): Promise<void> {
 
     /*
      * ESCENARIO 2:
-     * Desactivar debe impedir completamente la evaluación.
+     * Desactivar debe impedir completamente la evaluaciÃ³n.
      */
     const disabled = await activationService.deactivate({
       strategyId,
@@ -194,7 +194,7 @@ async function main(): Promise<void> {
     /*
      * ESCENARIO 3:
      * Reiniciar conceptualmente el acceso al estado mediante una
-     * nueva instancia de servicio debe recuperar la desactivación.
+     * nueva instancia de servicio debe recuperar la desactivaciÃ³n.
      */
     const secondActivationRepository = new PrismaStrategyActivationRepository(
       prisma,
@@ -236,7 +236,7 @@ async function main(): Promise<void> {
 
     /*
      * ESCENARIO 4:
-     * Otra versión de la misma estrategia debe tener estado propio.
+     * Otra versiÃ³n de la misma estrategia debe tener estado propio.
      */
     const versionTwoResult = await runner.evaluate(versionTwo, {
       symbol: 'TSLA',
@@ -266,7 +266,7 @@ async function main(): Promise<void> {
 
     /*
      * ESCENARIO 5:
-     * Reactivar la versión 1 debe permitir nuevamente la ejecución.
+     * Reactivar la versiÃ³n 1 debe permitir nuevamente la ejecuciÃ³n.
      */
     const activated = await activationService.activate({
       strategyId,
@@ -297,7 +297,7 @@ async function main(): Promise<void> {
 
     /*
      * ESCENARIO 6:
-     * Verificación física final del estado en PostgreSQL.
+     * VerificaciÃ³n fÃ­sica final del estado en PostgreSQL.
      */
     const finalVersionOneState =
       await prisma.strategyActivationState.findUnique({
@@ -402,3 +402,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

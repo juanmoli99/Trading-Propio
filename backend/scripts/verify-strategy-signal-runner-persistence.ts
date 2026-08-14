@@ -1,4 +1,4 @@
-import type { PersistentLockService } from '../src/database/locks/persistent-lock.service';
+﻿import type { PersistentLockService } from '../src/database/locks/persistent-lock.service';
 import type {
   StrategyActivationIdentity,
   StrategyActivationState,
@@ -132,6 +132,7 @@ class InMemoryStrategySignalRepository implements StrategySignalRepository {
       evaluatedAt: new Date(signal.evaluatedAt.getTime()),
       confidence: signal.confidence,
       reason: signal.reason,
+      configurationSnapshot: {},
       invalidation:
         signal.invalidation === null
           ? null
@@ -490,3 +491,5 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

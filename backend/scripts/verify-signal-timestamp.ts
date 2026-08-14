@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+﻿import { randomUUID } from 'node:crypto';
 import { StrategyRunnerService } from '../src/strategies/strategy-runner.service';
 import { StrategyValidationService } from '../src/strategies/strategy-validation.service';
 import type { TradingStrategy } from '../src/strategies/strategy.types';
@@ -139,3 +139,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

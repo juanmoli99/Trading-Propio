@@ -1,4 +1,4 @@
-import { MacdService } from '../src/indicators/macd.service';
+﻿import { MacdService } from '../src/indicators/macd.service';
 
 function check(name: string, condition: boolean): void {
   console.log(`${name}: ${condition}`);
@@ -253,3 +253,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

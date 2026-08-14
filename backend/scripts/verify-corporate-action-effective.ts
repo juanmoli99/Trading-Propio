@@ -248,3 +248,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

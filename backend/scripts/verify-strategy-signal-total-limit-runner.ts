@@ -1,4 +1,4 @@
-import type { PersistentLockService } from '../src/database/locks/persistent-lock.service';
+﻿import type { PersistentLockService } from '../src/database/locks/persistent-lock.service';
 import type { StrategySignalInvalidation } from '../src/strategies/signal-invalidation';
 import type { StrategyActivationRepository } from '../src/strategies/strategy-activation.repository';
 import { StrategyActivationService } from '../src/strategies/strategy-activation.service';
@@ -434,3 +434,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

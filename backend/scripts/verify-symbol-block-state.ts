@@ -1,4 +1,4 @@
-import type { SymbolBlacklistService } from '../src/watchlist/symbol-blacklist.service';
+﻿import type { SymbolBlacklistService } from '../src/watchlist/symbol-blacklist.service';
 import { SymbolBlockStateService } from '../src/watchlist/symbol-block-state.service';
 import type { SymbolSuspensionFilterService } from '../src/watchlist/symbol-suspension-filter.service';
 import type { SymbolTemporaryBlockService } from '../src/watchlist/symbol-temporary-block.service';
@@ -390,3 +390,4 @@ main().catch((error: unknown) => {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 });
+

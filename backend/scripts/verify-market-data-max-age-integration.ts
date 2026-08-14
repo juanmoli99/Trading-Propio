@@ -52,3 +52,4 @@ for (const [name, passed] of Object.entries(assertions)) {
 if (!Object.values(assertions).every(Boolean)) {
   process.exit(1);
 }
+

@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/database/prisma.service';
@@ -58,6 +58,7 @@ async function main(): Promise<void> {
     evaluatedAt,
     confidence: 0.8,
     reason: 'PostgreSQL invalidation verification',
+    configurationSnapshot: {},
     invalidation: null,
   };
 
@@ -338,3 +339,5 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

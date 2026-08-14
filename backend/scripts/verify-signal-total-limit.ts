@@ -1,4 +1,4 @@
-import {
+﻿import {
   DEFAULT_MAX_SIGNALS,
   MAX_MAX_SIGNALS,
   MIN_MAX_SIGNALS,
@@ -111,3 +111,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

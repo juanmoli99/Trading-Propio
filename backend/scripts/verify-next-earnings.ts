@@ -1,4 +1,4 @@
-import { NextEarningsService } from '../src/market-events/next-earnings.service';
+﻿import { NextEarningsService } from '../src/market-events/next-earnings.service';
 import type {
   EarningsCalendarQuery,
   EarningsCalendarResult,
@@ -279,3 +279,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

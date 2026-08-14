@@ -1,4 +1,4 @@
-import { CorporateActionRedemptionService } from '../src/corporate-actions/corporate-action-redemption.service';
+﻿import { CorporateActionRedemptionService } from '../src/corporate-actions/corporate-action-redemption.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {
@@ -204,7 +204,7 @@ async function main(): Promise<void> {
 
   if (failed.length > 0) {
     throw new Error(
-      `PUNTO 176 FALLÃ“: ${failed.join(', ')}`,
+      `PUNTO 176 FALLÃƒâ€œ: ${failed.join(', ')}`,
     );
   }
 
@@ -221,3 +221,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

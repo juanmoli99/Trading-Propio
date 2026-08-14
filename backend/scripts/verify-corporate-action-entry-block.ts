@@ -1,4 +1,4 @@
-import { CorporateActionEntryBlockService } from '../src/corporate-actions/corporate-action-entry-block.service';
+﻿import { CorporateActionEntryBlockService } from '../src/corporate-actions/corporate-action-entry-block.service';
 import type { CorporateActionPendingService } from '../src/corporate-actions/corporate-action-pending.service';
 import type { CorporateActionType } from '../src/corporate-actions/corporate-actions.types';
 

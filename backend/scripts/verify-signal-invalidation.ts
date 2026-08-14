@@ -1,4 +1,4 @@
-import {
+﻿import {
   MAX_STRATEGY_SIGNAL_INVALIDATION_REASON_LENGTH,
   cloneStrategySignalInvalidation,
   createStrategySignalInvalidation,
@@ -159,3 +159,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

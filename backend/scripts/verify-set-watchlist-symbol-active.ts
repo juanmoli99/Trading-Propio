@@ -1,4 +1,4 @@
-import { SetWatchlistSymbolActiveService } from '../src/watchlist/set-watchlist-symbol-active.service';
+﻿import { SetWatchlistSymbolActiveService } from '../src/watchlist/set-watchlist-symbol-active.service';
 import type { WatchlistRepository } from '../src/watchlist/watchlist.repository';
 import type { WatchlistEntry } from '../src/watchlist/watchlist.types';
 
@@ -341,3 +341,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

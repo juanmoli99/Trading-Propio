@@ -1,4 +1,4 @@
-import { CrossoverService } from '../src/indicators/crossover.service';
+﻿import { CrossoverService } from '../src/indicators/crossover.service';
 
 function check(name: string, condition: boolean): void {
   console.log(`${name}: ${condition}`);
@@ -255,3 +255,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

@@ -1,4 +1,4 @@
-import type { SymbolValidationService } from '../src/symbols/symbol-validation.service';
+﻿import type { SymbolValidationService } from '../src/symbols/symbol-validation.service';
 import { AddWatchlistSymbolService } from '../src/watchlist/add-watchlist-symbol.service';
 import type { WatchlistRepository } from '../src/watchlist/watchlist.repository';
 import type { WatchlistEntry } from '../src/watchlist/watchlist.types';
@@ -244,3 +244,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

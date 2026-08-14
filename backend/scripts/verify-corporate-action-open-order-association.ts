@@ -1,4 +1,4 @@
-import { CorporateActionOpenOrderAssociationService } from '../src/corporate-actions/corporate-action-open-order-association.service';
+﻿import { CorporateActionOpenOrderAssociationService } from '../src/corporate-actions/corporate-action-open-order-association.service';
 import type { AlpacaOrderService } from '../src/alpaca/alpaca-order.service';
 import type { CorporateActionEffectiveService } from '../src/corporate-actions/corporate-action-effective.service';
 

@@ -1,4 +1,4 @@
-import {
+﻿import {
   BUILT_IN_STRATEGY_INDICATORS,
   type BuiltInStrategyIndicatorName,
   type TradingStrategy,
@@ -212,3 +212,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

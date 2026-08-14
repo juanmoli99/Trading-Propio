@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import assert from 'node:assert/strict';
 import { ConfigService } from '@nestjs/config';
 import type { AlpacaAsset } from '../src/alpaca/alpaca-asset.types';
@@ -354,3 +354,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

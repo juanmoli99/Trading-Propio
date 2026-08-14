@@ -1,4 +1,4 @@
-import { ReturnsService } from '../src/indicators/returns.service';
+﻿import { ReturnsService } from '../src/indicators/returns.service';
 
 function check(name: string, condition: boolean): void {
   console.log(`${name}: ${condition}`);
@@ -216,3 +216,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

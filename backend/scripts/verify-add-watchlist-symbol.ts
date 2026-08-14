@@ -1,4 +1,4 @@
-import type { SymbolValidationService } from '../src/symbols/symbol-validation.service';
+﻿import type { SymbolValidationService } from '../src/symbols/symbol-validation.service';
 import type { SymbolValidationResult } from '../src/symbols/symbol-validation.types';
 import { AddWatchlistSymbolService } from '../src/watchlist/add-watchlist-symbol.service';
 import type { WatchlistEntry } from '../src/watchlist/watchlist.types';
@@ -70,6 +70,10 @@ async function main(): Promise<void> {
   };
 
   const watchlistRepository = {
+    async findBySymbol(): Promise<WatchlistEntry | null> {
+      return null;
+    },
+
     async create(input: {
       symbol: string;
       tradingSymbolId?: string | null;
@@ -203,3 +207,5 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

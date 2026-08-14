@@ -69,3 +69,4 @@ async function main(): Promise<void> {
 main().finally(async () => {
   await prisma.$disconnect();
 });
+

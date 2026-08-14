@@ -1,4 +1,4 @@
-import {
+﻿import {
   STRATEGY_SIGNAL_ACTIONS,
   type StrategySignalAction,
 } from '../src/strategies/signal.types';
@@ -134,3 +134,4 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

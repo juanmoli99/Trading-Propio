@@ -1,4 +1,4 @@
-import { CorporateActionStockDividendService } from '../src/corporate-actions/corporate-action-stock-dividend.service';
+﻿import { CorporateActionStockDividendService } from '../src/corporate-actions/corporate-action-stock-dividend.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {
@@ -286,7 +286,7 @@ async function main(): Promise<void> {
 
   if (failed.length > 0) {
     throw new Error(
-      `PUNTO 172 FALLÃ“: ${failed.join(', ')}`,
+      `PUNTO 172 FALLÃƒâ€œ: ${failed.join(', ')}`,
     );
   }
 

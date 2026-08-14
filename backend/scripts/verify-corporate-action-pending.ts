@@ -1,4 +1,4 @@
-import { CorporateActionPendingService } from '../src/corporate-actions/corporate-action-pending.service';
+﻿import { CorporateActionPendingService } from '../src/corporate-actions/corporate-action-pending.service';
 import type { CorporateActionsService } from '../src/corporate-actions/corporate-actions.service';
 
 async function main(): Promise<void> {

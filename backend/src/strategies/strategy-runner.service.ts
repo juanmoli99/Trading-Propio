@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@nestjs/common';
+﻿import { Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { PersistentLockService } from '../database/locks/persistent-lock.service';
 import {
@@ -364,6 +364,7 @@ export class StrategyRunnerService {
       evaluatedAt: new Date(signal.evaluatedAt.getTime()),
       confidence: signal.confidence,
       reason: signal.reason,
+      configurationSnapshot: signal.configurationSnapshot,
       invalidation:
         signal.invalidation === null
           ? null
@@ -376,3 +377,5 @@ export class StrategyRunnerService {
     };
   }
 }
+
+

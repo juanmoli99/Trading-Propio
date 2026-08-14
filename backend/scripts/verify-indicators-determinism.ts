@@ -1,4 +1,4 @@
-import { AdxService } from '../src/indicators/adx.service';
+﻿import { AdxService } from '../src/indicators/adx.service';
 import { AtrService } from '../src/indicators/atr.service';
 import { AverageVolumeService } from '../src/indicators/average-volume.service';
 import { BollingerBandsService } from '../src/indicators/bollinger-bands.service';
@@ -344,3 +344,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

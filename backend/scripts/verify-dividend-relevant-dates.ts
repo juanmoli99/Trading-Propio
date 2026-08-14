@@ -1,4 +1,4 @@
-import { DividendRelevantDatesService } from '../src/corporate-actions/dividend-relevant-dates.service';
+﻿import { DividendRelevantDatesService } from '../src/corporate-actions/dividend-relevant-dates.service';
 import type { CorporateActionCashDividendService } from '../src/corporate-actions/corporate-action-cash-dividend.service';
 import type {
   CorporateActionCashDividend,
@@ -254,3 +254,4 @@ main()
     console.error(error);
     process.exitCode = 1;
   });
+

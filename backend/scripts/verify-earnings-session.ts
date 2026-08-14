@@ -1,4 +1,4 @@
-import { normalizeFinnhubEarningsCalendarResponse } from '../src/market-events/finnhub-earnings.mapper';
+﻿import { normalizeFinnhubEarningsCalendarResponse } from '../src/market-events/finnhub-earnings.mapper';
 
 function check(name: string, condition: boolean): void {
   console.log(`${name}: ${condition}`);
@@ -149,3 +149,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

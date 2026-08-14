@@ -1,4 +1,4 @@
-import { CustomIndicatorRegistryService } from '../src/indicators/custom-indicator-registry.service';
+﻿import { CustomIndicatorRegistryService } from '../src/indicators/custom-indicator-registry.service';
 import type { Indicator } from '../src/indicators/indicator.interface';
 
 interface TestInput {
@@ -222,3 +222,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

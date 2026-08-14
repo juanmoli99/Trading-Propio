@@ -1,4 +1,4 @@
-import type { StrategySymbolOverrideRepository } from '../src/strategies/strategy-symbol-override.repository';
+﻿import type { StrategySymbolOverrideRepository } from '../src/strategies/strategy-symbol-override.repository';
 import { StrategySymbolOverrideService } from '../src/strategies/strategy-symbol-override.service';
 import type {
   PersistedStrategySymbolOverride,
@@ -389,3 +389,4 @@ void main()
 
     process.exitCode = 1;
   });
+

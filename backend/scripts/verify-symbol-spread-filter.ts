@@ -1,4 +1,4 @@
-import { SymbolSpreadFilterService } from '../src/watchlist/symbol-spread-filter.service';
+﻿import { SymbolSpreadFilterService } from '../src/watchlist/symbol-spread-filter.service';
 
 function check(name: string, condition: boolean): void {
   console.log(`${name}: ${condition}`);
@@ -285,3 +285,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

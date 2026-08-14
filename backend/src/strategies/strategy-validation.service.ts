@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { normalizeStrategySignalCooldownSeconds } from './signal-cooldown';
 import { normalizeStrategyMaxSignalsPerMinute } from './signal-frequency';
 import { normalizeStrategySignalConfidence } from './signal-confidence';
@@ -183,6 +183,7 @@ export class StrategyValidationService {
       evaluatedAt,
       confidence,
       reason,
+      configurationSnapshot: this.normalizeStrategyParameters(strategy.parameters),
       invalidation: null,
     };
   }
@@ -369,3 +370,5 @@ export class StrategyValidationService {
     return new Date(value.getTime());
   }
 }
+
+

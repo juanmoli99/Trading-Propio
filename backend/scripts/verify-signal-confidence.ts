@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+﻿import { randomUUID } from 'node:crypto';
 import {
   MAX_STRATEGY_SIGNAL_CONFIDENCE,
   MIN_STRATEGY_SIGNAL_CONFIDENCE,
@@ -171,3 +171,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

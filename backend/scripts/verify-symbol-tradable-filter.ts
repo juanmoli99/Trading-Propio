@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/database/prisma.service';
 import { SymbolTradableFilterService } from '../src/watchlist/symbol-tradable-filter.service';
@@ -217,3 +217,4 @@ main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+

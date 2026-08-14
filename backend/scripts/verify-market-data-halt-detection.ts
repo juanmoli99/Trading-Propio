@@ -1,4 +1,4 @@
-import { ConfigService } from '@nestjs/config';
+﻿import { ConfigService } from '@nestjs/config';
 import { MarketDataHaltDetectionService } from '../src/market-data/market-data-halt-detection.service';
 import { MarketDataTradingStatusService } from '../src/market-data/market-data-trading-status.service';
 
@@ -137,7 +137,7 @@ for (const [name, passed] of Object.entries(assertions)) {
 }
 
 if (!Object.values(assertions).every(Boolean)) {
-  console.error('PUNTO 156 FALLÓ.');
+  console.error('PUNTO 156 FALLÃ“.');
   process.exit(1);
 }
 

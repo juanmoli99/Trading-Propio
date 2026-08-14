@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../src/database/prisma.service';
@@ -31,7 +31,8 @@ function createSignal(
     action,
     evaluatedAt,
     confidence: 0.8,
-    reason: 'Cooldown lookup verification',
+    reason: '',
+    configurationSnapshot: {},
     invalidation: null,
   };
 }
@@ -191,3 +192,5 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

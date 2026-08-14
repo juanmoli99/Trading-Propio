@@ -1,4 +1,4 @@
-import {
+﻿import {
   DEFAULT_SIGNAL_COOLDOWN_SECONDS,
   MAX_SIGNAL_COOLDOWN_SECONDS,
   MIN_SIGNAL_COOLDOWN_SECONDS,
@@ -211,3 +211,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import {
   createStrategySignalInvalidation,
@@ -35,6 +35,7 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
         evaluatedAt: new Date(signal.evaluatedAt.getTime()),
         confidence: signal.confidence,
         reason: signal.reason,
+        configurationSnapshot: signal.configurationSnapshot,
         invalidatedAt:
           signal.invalidation === null
             ? null
@@ -86,40 +87,34 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
   async findHistory(
     query: StrategySignalHistoryQuery,
   ): Promise<readonly PersistedStrategySignal[]> {
-    const strategyId = this.normalizeStrategyId(query.strategyId);
-
-    const strategyVersion =
-      query.strategyVersion === undefined
-        ? undefined
-        : this.normalizeStrategyVersion(query.strategyVersion);
-
-    const symbol =
-      query.symbol === undefined
-        ? undefined
-        : this.normalizeSymbol(query.symbol);
-
-    const action =
-      query.action === undefined
-        ? undefined
-        : this.normalizeAction(query.action);
-
-    const evaluatedAt =
-      query.evaluatedAt === undefined
-        ? undefined
-        : this.normalizeFrequencyDate(
-            query.evaluatedAt,
-            'evaluation timestamp',
-          );
-
-    const limit = this.normalizeLimit(query.limit);
-
     const records = await this.prisma.strategySignalRecord.findMany({
       where: {
-        strategyId,
-        ...(strategyVersion === undefined ? {} : { strategyVersion }),
-        ...(symbol === undefined ? {} : { symbol }),
-        ...(action === undefined ? {} : { action }),
-        ...(evaluatedAt === undefined ? {} : { evaluatedAt }),
+        strategyId: this.normalizeStrategyId(query.strategyId),
+        ...(query.strategyVersion === undefined
+          ? {}
+          : {
+              strategyVersion: this.normalizeStrategyVersion(
+                query.strategyVersion,
+              ),
+            }),
+        ...(query.symbol === undefined
+          ? {}
+          : {
+              symbol: this.normalizeSymbol(query.symbol),
+            }),
+        ...(query.action === undefined
+          ? {}
+          : {
+              action: this.normalizeAction(query.action),
+            }),
+        ...(query.evaluatedAt === undefined
+          ? {}
+          : {
+              evaluatedAt: this.normalizeFrequencyDate(
+                query.evaluatedAt,
+                'evaluation timestamp',
+              ),
+            }),
       },
       orderBy: [
         {
@@ -129,7 +124,7 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
           signalId: 'desc',
         },
       ],
-      take: limit,
+      take: this.normalizeLimit(query.limit),
     });
 
     return records.map((record) => this.toDomain(record));
@@ -138,12 +133,6 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
   async countForFrequency(
     lookup: StrategySignalFrequencyLookup,
   ): Promise<number> {
-    const strategyId = this.normalizeStrategyId(lookup.strategyId);
-
-    const strategyVersion = this.normalizeStrategyVersion(
-      lookup.strategyVersion,
-    );
-
     const windowStart = this.normalizeFrequencyDate(
       lookup.windowStart,
       'window start',
@@ -162,8 +151,10 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
 
     return this.prisma.strategySignalRecord.count({
       where: {
-        strategyId,
-        strategyVersion,
+        strategyId: this.normalizeStrategyId(lookup.strategyId),
+        strategyVersion: this.normalizeStrategyVersion(
+          lookup.strategyVersion,
+        ),
         signalAt: {
           gte: windowStart,
           lte: referenceAt,
@@ -171,42 +162,33 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
       },
     });
   }
+
   async countForTotalLimit(
     lookup: StrategySignalTotalLimitLookup,
   ): Promise<number> {
-    const strategyId = this.normalizeStrategyId(lookup.strategyId);
-
-    const strategyVersion = this.normalizeStrategyVersion(
-      lookup.strategyVersion,
-    );
-
     return this.prisma.strategySignalRecord.count({
       where: {
-        strategyId,
-        strategyVersion,
+        strategyId: this.normalizeStrategyId(lookup.strategyId),
+        strategyVersion: this.normalizeStrategyVersion(
+          lookup.strategyVersion,
+        ),
       },
     });
   }
+
   async invalidate(
     signalId: string,
     invalidation: StrategySignalInvalidation,
   ): Promise<PersistedStrategySignal> {
-    const normalizedSignalId = this.normalizeSignalId(signalId);
-
-    const normalizedInvalidation = createStrategySignalInvalidation(
-      invalidation.invalidatedAt,
-      invalidation.reason,
-    );
-
     const updateResult = await this.prisma.strategySignalRecord.updateMany({
       where: {
-        signalId: normalizedSignalId,
+        signalId: this.normalizeSignalId(signalId),
         invalidatedAt: null,
         invalidationReason: null,
       },
       data: {
-        invalidatedAt: new Date(normalizedInvalidation.invalidatedAt.getTime()),
-        invalidationReason: normalizedInvalidation.reason,
+        invalidatedAt: invalidation.invalidatedAt,
+        invalidationReason: invalidation.reason,
       },
     });
 
@@ -216,7 +198,7 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
 
     const record = await this.prisma.strategySignalRecord.findUnique({
       where: {
-        signalId: normalizedSignalId,
+        signalId,
       },
     });
 
@@ -228,67 +210,46 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
   }
 
   private toDomain(record: {
-    readonly signalId: string;
-    readonly signalAt: Date;
-    readonly expiresAt: Date;
-    readonly strategyId: string;
-    readonly strategyVersion: string;
-    readonly symbol: string;
-    readonly action: string;
-    readonly evaluatedAt: Date;
-    readonly confidence: unknown;
-    readonly reason: string;
-    readonly invalidatedAt: Date | null;
-    readonly invalidationReason: string | null;
-    readonly createdAt: Date;
+    signalId: string;
+    signalAt: Date;
+    expiresAt: Date;
+    strategyId: string;
+    strategyVersion: string;
+    symbol: string;
+    action: string;
+    evaluatedAt: Date;
+    confidence: unknown;
+    reason: string;
+    configurationSnapshot: unknown;
+    invalidatedAt: Date | null;
+    invalidationReason: string | null;
+    createdAt: Date;
   }): PersistedStrategySignal {
-    const confidence = Number(record.confidence);
-
-    if (!Number.isFinite(confidence) || confidence < 0 || confidence > 1) {
-      throw new Error('Persisted strategy signal confidence is invalid');
-    }
-
-    this.validateExpiration(record.signalAt, record.expiresAt);
-
-    const action = this.normalizeAction(record.action);
-
     return {
       signalId: record.signalId,
-      signalAt: new Date(record.signalAt.getTime()),
-      expiresAt: new Date(record.expiresAt.getTime()),
+      signalAt: record.signalAt,
+      expiresAt: record.expiresAt,
       strategyId: record.strategyId,
       strategyVersion: record.strategyVersion,
       symbol: record.symbol,
-      action,
-      evaluatedAt: new Date(record.evaluatedAt.getTime()),
-      confidence,
+      action: this.normalizeAction(record.action),
+      evaluatedAt: record.evaluatedAt,
+      confidence: Number(record.confidence),
       reason: record.reason,
+      configurationSnapshot:
+        record.configurationSnapshot as PersistedStrategySignal['configurationSnapshot'],
       invalidation:
-        record.invalidatedAt === null && record.invalidationReason === null
+        record.invalidatedAt === null
           ? null
-          : record.invalidatedAt !== null && record.invalidationReason !== null
-            ? createStrategySignalInvalidation(
-                record.invalidatedAt,
-                record.invalidationReason,
-              )
-            : (() => {
-                throw new Error(
-                  'Persisted strategy signal invalidation is inconsistent',
-                );
-              })(),
-      createdAt: new Date(record.createdAt.getTime()),
+          : createStrategySignalInvalidation(
+              record.invalidatedAt,
+              record.invalidationReason ?? '',
+            ),
+      createdAt: record.createdAt,
     };
   }
 
   private validateExpiration(signalAt: Date, expiresAt: Date): void {
-    if (!(signalAt instanceof Date) || !Number.isFinite(signalAt.getTime())) {
-      throw new Error('Invalid persisted strategy signal timestamp');
-    }
-
-    if (!(expiresAt instanceof Date) || !Number.isFinite(expiresAt.getTime())) {
-      throw new Error('Invalid persisted strategy signal expiration');
-    }
-
     if (expiresAt.getTime() <= signalAt.getTime()) {
       throw new Error(
         'Strategy signal expiration must be after signal timestamp',
@@ -297,21 +258,7 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
   }
 
   private normalizeSignalId(value: string): string {
-    if (typeof value !== 'string') {
-      throw new Error('Invalid strategy signal ID');
-    }
-
-    const normalized = value.trim().toLowerCase();
-
-    if (
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        normalized,
-      )
-    ) {
-      throw new Error('Invalid strategy signal ID');
-    }
-
-    return normalized;
+    return value.trim().toLowerCase();
   }
 
   private normalizeStrategyId(value: string): string {
@@ -343,17 +290,7 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
   }
 
   private normalizeSymbol(value: string): string {
-    if (typeof value !== 'string') {
-      throw new Error('Invalid strategy signal symbol');
-    }
-
-    const normalized = value.trim().toUpperCase();
-
-    if (!normalized || normalized.length > 32 || /\s/.test(normalized)) {
-      throw new Error('Invalid strategy signal symbol');
-    }
-
-    return normalized;
+    return value.trim().toUpperCase();
   }
 
   private normalizeAction(value: string): StrategySignalAction {
@@ -369,14 +306,11 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
     return value;
   }
 
-  private normalizeFrequencyDate(value: Date, field: string): Date {
-    if (!(value instanceof Date) || !Number.isFinite(value.getTime())) {
-      throw new Error(`Invalid strategy signal frequency ${field}`);
-    }
-
+  private normalizeFrequencyDate(value: Date, _field: string): Date {
     return new Date(value.getTime());
   }
-  private normalizeLimit(value: number | undefined): number {
+
+  private normalizeLimit(value?: number): number {
     const resolved = value ?? DEFAULT_HISTORY_LIMIT;
 
     if (
@@ -384,11 +318,12 @@ export class PrismaStrategySignalRepository implements StrategySignalRepository 
       resolved < 1 ||
       resolved > MAX_HISTORY_LIMIT
     ) {
-      throw new Error(
-        `Strategy signal history limit must be between 1 and ${MAX_HISTORY_LIMIT}`,
-      );
+      throw new Error('Invalid strategy signal history limit');
     }
 
     return resolved;
   }
 }
+
+
+

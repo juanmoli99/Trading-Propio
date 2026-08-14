@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../src/database/prisma.service';
@@ -41,6 +41,7 @@ async function main(): Promise<void> {
     signalId,
     signalAt,
     expiresAt,
+    configurationSnapshot: {},
     invalidation: null,
     strategyId: 'expiration-postgres-test',
     strategyVersion: '1.0.0',
@@ -191,3 +192,5 @@ void main()
     console.log('EXIT_CODE: 1');
     process.exitCode = 1;
   });
+
+

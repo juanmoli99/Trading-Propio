@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Indicator,
   IndicatorInput,
   IndicatorResult,
@@ -141,3 +141,4 @@ try {
   console.log('EXIT_CODE: 1');
   process.exitCode = 1;
 }
+
